@@ -1,5 +1,5 @@
 # GameBuino
 Module Retro gaming :  
-  Viviane NGUYEN
-  Moussa FOFANA
-  Fabrice FERRERE
+  Viviane NGUYEN  
+  Moussa FOFANA  
+  Fabrice FERRERE  
