@@ -1,10 +1,13 @@
 /*
  Name:		Bombuino.ino
  Created:	16/06/2021 15:04:59
- Author:	fabrice ferrere
+ Author:	Viviane NGUYEN - Moussa FOFANA - Fabrice FERRERE
 */
 
-// the setup function runs once when you press reset or power the board
+#include "Entity.h"
+#include <Gamebuino-Meta.h>
+#include <cstdlib>
+
 void setup() {
 
 }
