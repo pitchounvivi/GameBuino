@@ -19,19 +19,19 @@ class Entity {
 	public:
 	virtual void update();
 
-	const& int getX() const;
+	const int& getX() const;
 
 	void setX(const int& x);
 
-	const& int getY() const;
+	const int& getY() const;
 
 	void setY(const int& y);
 
-	const& int getWidth() const;
+	const int& getWidth() const;
 
 	void setWidth(const int& width);
 
-	const& int getHeight();
+	const int& getHeight();
 
 	void setHeight(const int& height);
 };
