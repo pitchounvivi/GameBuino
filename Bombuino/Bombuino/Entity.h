@@ -17,7 +17,7 @@ class Entity {
 	int _height;
 
 	public:
-	virtual void update();
+		virtual void update();
 
 	const int& getX() const;
 

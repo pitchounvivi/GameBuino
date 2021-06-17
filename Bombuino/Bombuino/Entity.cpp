@@ -13,7 +13,7 @@ void Entity::setX(const int& x) {
 }
 
 const int& Entity::getY() const {
-	return _x;
+	return _y;
 }
 
 void Entity::setY(const int& y) {
