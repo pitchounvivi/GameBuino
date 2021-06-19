@@ -5,6 +5,7 @@
 */
 
 #include "Entity.h"
+#include "Utils.h"
 #include <Gamebuino-Meta.h>
 #include <cstdlib>
 
@@ -25,20 +26,76 @@ public:
     }
 };
 
-Brique* briqueArray[99];
+enum positionMove
+{
+    TOP,
+    BOTTOM,
+    LEFT,
+    RIGHT,
+};
 
+class Player : Entity {
+    public :
+        Player(int x, int y, int width, int height) {
+            _x = x;
+            _y = y;
+            _width = width;
+            _height = height;
+            gb.display.fillRect(_x, _y, _width, _height);
+        }
+
+        void update(Button move) {
+            switch (move)
+            {
+            case Gamebuino_Meta::Button::down:
+                _y += 8;
+                break;
+            case Gamebuino_Meta::Button::left:
+                _x -= 8;
+                break;
+            case Gamebuino_Meta::Button::right:
+                _x += 8;
+                break;
+            case Gamebuino_Meta::Button::up:
+                _y -= 8;
+                break;
+            case Gamebuino_Meta::Button::a:
+                break;
+            case Gamebuino_Meta::Button::b:
+                break;
+            case Gamebuino_Meta::Button::menu:
+                break;
+            case Gamebuino_Meta::Button::home:
+                break;
+            default:
+                break;
+            }
+        } 
+
+        void update() {
+            gb.display.fillRect(_x, _y, _width, _height);
+        }
+
+};
+
+
+Brique* briqueArray[99];
+Player* p;
 void setup() {
 	gb.begin();
     CreateBriqueIndestructible();
+    p = new Player(2, 18, 5, 5);
 }
 
 
 void loop() {
     while (!gb.update());
     gb.display.clear();
-    DebugTopScreen("Informations ", 00);
+    TouchEvent();
+    p->update();
     gb.display.drawFastHLine(0, 8, gb.display.width());
     DrawBrique();
+
 }
 
 
@@ -70,19 +127,18 @@ void DrawBrique() {
     }
 }
 
+void TouchEvent() {
 
-void DebugTopScreen(String texte, int value) {
-    gb.display.setCursorY(2);
-    gb.display.setCursorX(2);
-    gb.display.print(texte + ":");
-    gb.display.print(value);
-}
-
-void DebugBottomScreen(String texte, int value)
-{
-    gb.display.setColor(WHITE);
-    gb.display.setCursorY(50);
-    gb.display.setCursorX(2);
-    gb.display.print(texte + ":");
-    gb.display.print(value);
+    if (gb.buttons.pressed(BUTTON_UP)) {
+        p->update(BUTTON_UP);
+    }
+    if (gb.buttons.pressed(BUTTON_DOWN)) {
+        p->update(BUTTON_DOWN);
+    }
+    if (gb.buttons.pressed(BUTTON_LEFT)) {
+        p->update(BUTTON_LEFT);
+    }
+    if (gb.buttons.pressed(BUTTON_RIGHT)) {
+        p->update(BUTTON_RIGHT);
+    }
 }
