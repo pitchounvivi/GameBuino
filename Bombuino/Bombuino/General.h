@@ -20,7 +20,7 @@ class General
 
 		static int LineHeightScore;
 
-		static int BombeTimer;
+		const static int BombeTimer;
 
 	private:
 		General() {}

@@ -12,4 +12,4 @@ int General::PlayerHeight = 6;
 
 
 int General::LineHeightScore = 7;
-int General::BombeTimer= General::FPS*6;
+const int General::BombeTimer= General::FPS*6;

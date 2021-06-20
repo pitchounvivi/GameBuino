@@ -10,6 +10,14 @@
 #include <Gamebuino-Meta.h>
 #include <cstdlib>
 
+
+
+const int maxEntite = 300;
+Entity* EntityArray[maxEntite] = { nullptr };
+
+
+#pragma region ENTITY TO MOVE
+
 class Brique : public Entity {
 public:
 
@@ -21,13 +29,14 @@ public:
     {
         _x = x;
         _y = y;
-
+        _width = WIDTH;
+        _height = HEIGHT;
         typeEntity = TypeEntity::briques;
     }
 
     void update() {
          gb.display.setColor(BROWN);
-         gb.display.fillRect(_x, _y, WIDTH, HEIGHT);
+         gb.display.fillRect(_x, _y, _width, _height);
     };
 };
 
@@ -106,34 +115,24 @@ public:
         _indexBombe = indexBombe;
     };
 
-    void update(Entity* entityARRAY[]) {
+
+    void update() {
+
+        gb.display.setColor(colorBombe);
+        gb.display.fillRoundRect(_x, _y, _width, _height,5);
 
         if (TimerBombe <= 0) {
-            entityARRAY[_indexBombe] = NULL;
+            EntityArray[_indexBombe] = NULL;
             return;
         }
         colorBombe = gb.createColor(255, TimerBombe, 38);
-        TimerBombe-=2;
-
-    }   
-
-    void update() {
-        update(EntityArray);
-        gb.display.setColor(colorBombe);
-        gb.display.fillRoundRect(_x, _y, _width, _height,5);
+        TimerBombe -= 2;
     }
 };
-
-//Bombe* BombeArray[20];
-//Brique* briqueArray[99];
+#pragma endregion
 
 Player* player;
-Entity* EntityArray[50] = {nullptr};
-int cptEntite = 0;
-
-int EntityCompteur = 0;
-int cptBrique = 0;
-int cptBriquePrint = 0;
+int CompteurEntite = 0;
 
 void setup() {
     gb.begin();
@@ -144,55 +143,30 @@ void setup() {
 void loop() {
     while (!gb.update());
     gb.display.clear();
-
-    Utils::DebugMessageOnTopScreen("brique", cptBrique);
-    Utils::DebugMessageOnBottomScreen("briquef", cptBriquePrint);
     gb.display.drawFastHLine(0, General::LineHeightScore, gb.display.width());
-
     Draw();
     TouchEvent();
     player->update();
-
 }
 
 void InstanceUnbreakBrique() {
     int EcartBriqueX = Brique::WIDTH *2 ;
     int EcartBriqueY = Brique::HEIGHT * 2;
 
-    //for (int y = General::LineHeightScore + General::HeightBrique; y < 63; y += EcartBriqueY) {
+    for (int y = General::LineHeightScore + Brique::HEIGHT; y < 63; y += EcartBriqueY) {
         for (int x = Brique::WIDTH; x < 77; x += EcartBriqueX) {
-            EntityArray[cptEntite] = new Brique(x, 15);
-            cptEntite += 1;
-            cptBrique++;
+            EntityArray[CompteurEntite++] = new Brique(x, y);
         }
-    //}
+    }
 }
 
 
 void Draw() {
-    cptBriquePrint = 0;
-    gb.display.setCursor(1, 8);
     for (Entity* entity : EntityArray) {
         if (entity == nullptr) {
             continue;
         }
-        gb.display.printf("%d\n",entity->typeEntity);
-
         entity->update();
-        cptBriquePrint++;
-        //if (entity->typeEntity == TypeEntity::briques) {
-        //    Brique* brique = (Brique*)entity;
-
-        //    cptBriquePrint++;
-        //}
-
-        //if (entity->typeEntity == TypeEntity::bombes) {
-        //    Bombe* bombe = static_cast<Bombe*>(entity);
-        //    bombe->update(EntityArray);
-        //    gb.display.setColor(bombe->colorBombe);
-        //    gb.display.fillRoundRect(bombe->getX(), bombe->getY(), bombe->getWidth(), bombe->getHeight(), 5);
-        //}
-
     }
 }
 
@@ -229,15 +203,14 @@ void TouchEvent() {
     }    
     
     if (gb.buttons.pressed(BUTTON_A)) {
-        EntityArray[EntityCompteur] = new Bombe(player->getX(), player->getY(), EntityCompteur);
+        EntityArray[CompteurEntite] = new Bombe(player->getX(), player->getY(), CompteurEntite);
 
-        EntityCompteur++;
-        if (EntityCompteur >= 300)
+        CompteurEntite++;
+        if (CompteurEntite >= maxEntite)
         {
-            EntityCompteur = 0;
+            CompteurEntite = 0;
         }
 
-        Utils::DebugMessageOnBottomScreen("EntityCompteur", EntityCompteur);
     }
 }
 
@@ -256,15 +229,17 @@ bool PlayerCanMove(positionMove moveTO){
         if (player->getX() + moveTO <= 0 || player->getX() + moveTO >= 77) {
             return false;
         }
+        gb.display.setCursor(0, 0);
+        gb.display.setColor(YELLOW);
 
+        // si la position du joueur + ou - X entre en collision avec une entity alors il ne bouge pas
+        for (Entity* entity : EntityArray) {
 
-        // si la position du joueur + ou - X entre en collision avec une brique alors il ne bouge pas
-        for (Entity* brique : EntityArray) {
-            if (gb.collide.rectRect(brique->getX(), brique->getY(), brique->getWidth(), brique->getHeight(), player->getX() + moveTO, player->getY(), player->getWidth(), player->getHeight())) {
+            if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), player->getX() + moveTO, player->getY(), player->getWidth(), player->getHeight())) {
                 tmp = false;
             }
         }
-        return tmp;
+
     }
     else {
 
@@ -272,13 +247,13 @@ bool PlayerCanMove(positionMove moveTO){
             return false;
         }
 
-
-        // si la position du joueur + ou - Y entre en collision avec une brique alors il ne bouge pas
-        for (Entity* brique : EntityArray) {
-            if (gb.collide.rectRect(brique->getX(), brique->getY(), brique->getWidth(), brique->getHeight(), player->getX(), player->getY() + moveTO, player->getWidth(), player->getHeight())) {
+        // si la position du joueur + ou - Y entre en collision avec une entity alors il ne bouge pas
+        for (Entity* entity : EntityArray) {
+            if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), player->getX(), player->getY() + moveTO, player->getWidth(), player->getHeight())) {
                 tmp = false;
             }
         }
-        return tmp;
     }
+
+    return tmp;
 }
