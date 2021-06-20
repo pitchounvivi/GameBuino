@@ -52,11 +52,18 @@ enum positionMove
 class Player : Entity {
 public:
     TypeEntity typeEntity = TypeEntity::players;
+
+    static const int WIDTH = 5;
+    static const int HEIGHT = 6;
+    static const int PlayerMaxBombe = 2;
+
+    int BombePosingNumber = 0;
+
     Player(int x, int y, int width, int height) {
         _x = x;
         _y = y;
-        _width = width;
-        _height = height;
+        _width = WIDTH;
+        _height = HEIGHT;
         gb.display.fillRect(_x, _y, _width, _height);
     }
 
@@ -104,15 +111,23 @@ class Bombe : public Entity {
 
 public:
     TypeEntity typeEntity = TypeEntity::bombes;
+
     int TimerBombe = General::BombeTimer;
     Color colorBombe = gb.createColor(255, TimerBombe, 38);
     int _indexBombe;
-    Bombe(int x, int y,int indexBombe) {
+    Player* _playerPosingBomb;
+
+    static const int WIDTH = 5;
+    static const int HEIGHT = 6;
+
+
+    Bombe(int x, int y,int indexBombe,Player* playerPoseBombe) {
         _x = x;
         _y = y;
-        _width = General::PlayerWidth;
-        _height = General::PlayerHeight;
+        _width = WIDTH;
+        _height = HEIGHT;
         _indexBombe = indexBombe;
+        _playerPosingBomb = playerPoseBombe;
     };
 
 
@@ -123,6 +138,7 @@ public:
 
         if (TimerBombe <= 0) {
             EntityArray[_indexBombe] = NULL;
+            _playerPosingBomb->BombePosingNumber = _playerPosingBomb->BombePosingNumber <= 0 ? 0 : _playerPosingBomb->BombePosingNumber--;
             return;
         }
         colorBombe = gb.createColor(255, TimerBombe, 38);
@@ -137,7 +153,7 @@ int CompteurEntite = 0;
 void setup() {
     gb.begin();
     InstanceUnbreakBrique();
-    player = new Player(General::PlayerStartPositionX,General::PlayerStartPositionY, General::PlayerWidth,General::PlayerHeight);
+    player = new Player(General::PlayerStartPositionX,General::PlayerStartPositionY, Player::WIDTH,Player::HEIGHT);
 }
 
 void loop() {
@@ -203,14 +219,18 @@ void TouchEvent() {
     }    
     
     if (gb.buttons.pressed(BUTTON_A)) {
-        EntityArray[CompteurEntite] = new Bombe(player->getX(), player->getY(), CompteurEntite);
+        if (player->BombePosingNumber == Player::PlayerMaxBombe) {
+            return;
+        }
+
+        EntityArray[CompteurEntite] = new Bombe(player->getX(), player->getY(), CompteurEntite,player);
 
         CompteurEntite++;
         if (CompteurEntite >= maxEntite)
         {
             CompteurEntite = 0;
         }
-
+        player->BombePosingNumber++;
     }
 }
 

@@ -15,8 +15,6 @@ class General
 
 		static int PlayerStartPositionX;
 		static int PlayerStartPositionY;
-		static int PlayerWidth;
-		static int PlayerHeight;
 
 		static int LineHeightScore;
 
