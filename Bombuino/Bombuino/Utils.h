@@ -15,7 +15,6 @@ class Utils
 		static void DebugMessageOnBottomScreen(String texte, int value);
 
 	private:
-		// Disallow creating an instance of this object
 		Utils() {}
 };
 
