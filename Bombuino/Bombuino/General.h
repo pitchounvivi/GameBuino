@@ -12,8 +12,6 @@ class General
 {
 	public:
 		static const int FPS;
-		static int WidthBrique ;
-		static int HeightBrique ;
 
 		static int PlayerStartPositionX;
 		static int PlayerStartPositionY;

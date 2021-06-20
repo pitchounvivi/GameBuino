@@ -9,6 +9,12 @@
 	#include "WProgram.h"
 #endif
 
+enum TypeEntity {
+	briques =0,
+	bombes=1,
+	players=2,
+};
+
 class Entity {
 	protected:
 	int _x;
@@ -17,6 +23,7 @@ class Entity {
 	int _height;
 
 	public:
+
 		virtual void update();
 
 		const int& getX() const;
@@ -34,6 +41,8 @@ class Entity {
 		const int& getHeight();
 
 		void setHeight(const int& height);
+
+		TypeEntity typeEntity;
 };
 
 #endif
