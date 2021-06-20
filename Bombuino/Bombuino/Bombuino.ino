@@ -13,9 +13,10 @@ void setup() {
 }
 
 // pour rappel l'écran actuel fait 79/63
+int largeur = 77;
+int hauteur = 63;
 
-// Initialisation du tableau
-// int Brick[i][j] = {};
+// Initialisation 
 int i = 0;
 int position_x = 1; // pour centrer le quadrillage, on le décalle de 1
 int position_y = 7; // Prise en compte de la première ligne
@@ -28,10 +29,6 @@ void loop() {
 	gb.display.clear();
 
 	//////////////////////////ZONE QUADRILLAGE
-	// afficher une ligne de brique
-	int largeur = 77;
-	int hauteur = 63;
-
 	affiche_Map(largeur, hauteur);
 }
 
