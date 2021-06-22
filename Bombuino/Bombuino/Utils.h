@@ -13,7 +13,8 @@ class Utils
 	public:
 		static void DebugMessageOnTopScreen(String texte, int value);
 		static void DebugMessageOnBottomScreen(String texte, int value);
-
+		const static uint16_t BOMB_TEXTURE[];
+		const static uint16_t EXPLOSION_TEXTURE[];
 	private:
 		Utils() {}
 };

@@ -9,7 +9,29 @@
 #include "Utils.h"
 #include <Gamebuino-Meta.h>
 #include <cstdlib>
+#include "C:/Users/Jack Salon/Desktop/arduino1.8.5-Windows/arduino/portable/sketchbook/libraries/Gamebuino_META/src/utility/Graphics/Graphics.h"
 
+const uint16_t ROBOT_TEXTURE[] = {
+    // metadata
+
+    5,      // frame width
+    6,      // frame height
+    1,      // frames
+    0,      // frame loop
+    0xf81f, // transparent color
+    0,      // 16-bits color mode
+
+    // colormap
+
+    0xf81f, 0x69ec, 0x69ab, 0x69ab, 0xf81f,
+    0x522e, 0x91ca, 0x522d, 0x9188, 0x498a,
+    0xf81f, 0x41ac, 0x522d, 0x4169, 0xf81f,
+    0x69ec, 0x4148, 0x4148, 0x4948, 0x61ab,
+    0x71c9, 0x4948, 0x4929, 0x5148, 0x6969,
+    0xf81f, 0x39ed, 0xf81f, 0x420d, 0xf81f
+}; 
+
+Image PlayerImg(ROBOT_TEXTURE);
 
 
 const int maxEntite = 300;
@@ -101,12 +123,14 @@ public:
     }
 
     void update() {
-        gb.display.setColor(WHITE);
-        gb.display.fillRect(_x, _y, _width, _height);
+        //gb.display.setColor(WHITE);
+        //gb.display.fillRect(_x, _y, _width, _height);
+        gb.display.drawImage(_x, _y, PlayerImg);
     }
 
 };
 
+Image Explosion(Utils::EXPLOSION_TEXTURE);
 class Bombe : public Entity {
 
 public:
@@ -116,10 +140,8 @@ public:
     Color colorBombe = gb.createColor(255, TimerBombe, 38);
     int _indexBombe;
     Player* _playerPosingBomb;
-
     static const int WIDTH = 5;
     static const int HEIGHT = 6;
-
 
     Bombe(int x, int y,int indexBombe,Player* playerPoseBombe) {
         _x = x;
@@ -130,15 +152,29 @@ public:
         _playerPosingBomb = playerPoseBombe;
     };
 
-
+    int testctp = 0;
     void update() {
 
-        gb.display.setColor(colorBombe);
-        gb.display.fillRoundRect(_x, _y, _width, _height,5);
+        Utils::DebugMessageOnTopScreen("TimerBombe", TimerBombe);
+        if (TimerBombe < 14) {
+            gb.display.drawImage(_x-Brique::WIDTH, _y-Brique::HEIGHT, Explosion);
+            Explosion.setFrame(1);
+            gb.display.drawImage(_x - Brique::WIDTH, _y - Brique::HEIGHT, Explosion);
+
+        }
+        else {
+            gb.display.drawImage(_x, _y, Utils::BOMB_TEXTURE);
+        }
+
 
         if (TimerBombe <= 0) {
             EntityArray[_indexBombe] = NULL;
-            _playerPosingBomb->BombePosingNumber = _playerPosingBomb->BombePosingNumber <= 0 ? 0 : _playerPosingBomb->BombePosingNumber--;
+            _playerPosingBomb->BombePosingNumber--;
+
+            if (_playerPosingBomb->BombePosingNumber <= 0) {
+                _playerPosingBomb->BombePosingNumber = 0;
+            }
+
             return;
         }
         colorBombe = gb.createColor(255, TimerBombe, 38);
@@ -194,6 +230,7 @@ void TouchEvent() {
             return;
         }
         player->update(positionMove::UP);
+        //PlayerImg.setFrame(2);
     }
 
     if (gb.buttons.pressed(BUTTON_DOWN)) {
@@ -202,6 +239,7 @@ void TouchEvent() {
         }
 
         player->update(positionMove::DOWN);
+        //PlayerImg.setFrame(0);
     }
 
     if (gb.buttons.pressed(BUTTON_LEFT)) {
@@ -209,6 +247,7 @@ void TouchEvent() {
             return;
         }
         player->update(positionMove::LEFT);
+        //PlayerImg.setFrame(3);
     }
 
     if (gb.buttons.pressed(BUTTON_RIGHT)) {
@@ -216,6 +255,7 @@ void TouchEvent() {
             return;
         }
         player->update(positionMove::RIGHT);
+        //PlayerImg.setFrame(1);
     }    
     
     if (gb.buttons.pressed(BUTTON_A)) {
@@ -277,3 +317,6 @@ bool PlayerCanMove(positionMove moveTO){
 
     return tmp;
 }
+
+
+
