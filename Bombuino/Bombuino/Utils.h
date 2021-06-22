@@ -15,6 +15,9 @@ class Utils
 		static void DebugMessageOnBottomScreen(String texte, int value);
 		const static uint16_t BOMB_TEXTURE[];
 		const static uint16_t EXPLOSION_TEXTURE[];
+		const static uint16_t BRIQUE_INCASSABLE[];
+		const static uint16_t ROBOT_TEXTURE[];
+
 	private:
 		Utils() {}
 };

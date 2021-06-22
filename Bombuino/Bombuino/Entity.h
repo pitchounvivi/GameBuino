@@ -21,6 +21,7 @@ class Entity {
 	int _y;
 	int _width;
 	int _height;
+	TypeEntity _typeEntity;
 
 	public:
 
@@ -42,7 +43,7 @@ class Entity {
 
 		void setHeight(const int& height);
 
-		TypeEntity typeEntity;
+		const TypeEntity& getTypeEntity();
 };
 
 #endif

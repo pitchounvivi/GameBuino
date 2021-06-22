@@ -11,29 +11,10 @@
 #include <cstdlib>
 #include "C:/Users/Jack Salon/Desktop/arduino1.8.5-Windows/arduino/portable/sketchbook/libraries/Gamebuino_META/src/utility/Graphics/Graphics.h"
 
-const uint16_t ROBOT_TEXTURE[] = {
-    // metadata
 
-    5,      // frame width
-    6,      // frame height
-    1,      // frames
-    0,      // frame loop
-    0xf81f, // transparent color
-    0,      // 16-bits color mode
-
-    // colormap
-
-    0xf81f, 0x69ec, 0x69ab, 0x69ab, 0xf81f,
-    0x522e, 0x91ca, 0x522d, 0x9188, 0x498a,
-    0xf81f, 0x41ac, 0x522d, 0x4169, 0xf81f,
-    0x69ec, 0x4148, 0x4148, 0x4948, 0x61ab,
-    0x71c9, 0x4948, 0x4929, 0x5148, 0x6969,
-    0xf81f, 0x39ed, 0xf81f, 0x420d, 0xf81f
-}; 
-
-Image PlayerImg(ROBOT_TEXTURE);
-
-
+Image PlayerImg(Utils::ROBOT_TEXTURE);
+Image Explosion(Utils::EXPLOSION_TEXTURE);
+Image BombeImg(Utils::BOMB_TEXTURE);
 const int maxEntite = 300;
 Entity* EntityArray[maxEntite] = { nullptr };
 
@@ -46,19 +27,20 @@ public:
     static const int WIDTH = 7;
     static const int HEIGHT = 8;
      
-    TypeEntity typeEntity;
-    Brique(int x, int y) 
+    bool isBreakable = true;
+
+    Brique(int x, int y,bool isbreakble = true) 
     {
         _x = x;
         _y = y;
         _width = WIDTH;
         _height = HEIGHT;
-        typeEntity = TypeEntity::briques;
+        _typeEntity = TypeEntity::briques;
+        isBreakable = isbreakble;
     }
 
     void update() {
-         gb.display.setColor(BROWN);
-         gb.display.fillRect(_x, _y, _width, _height);
+         gb.display.drawImage(_x, _y, Utils::BRIQUE_INCASSABLE);
     };
 };
 
@@ -70,11 +52,8 @@ enum positionMove
     RIGHT = 7,
 };
 
-
 class Player : Entity {
 public:
-    TypeEntity typeEntity = TypeEntity::players;
-
     static const int WIDTH = 5;
     static const int HEIGHT = 6;
     static const int PlayerMaxBombe = 2;
@@ -87,6 +66,7 @@ public:
         _width = WIDTH;
         _height = HEIGHT;
         gb.display.fillRect(_x, _y, _width, _height);
+        _typeEntity = TypeEntity::players;
     }
 
     int getX() {
@@ -130,11 +110,9 @@ public:
 
 };
 
-Image Explosion(Utils::EXPLOSION_TEXTURE);
 class Bombe : public Entity {
 
 public:
-    TypeEntity typeEntity = TypeEntity::bombes;
 
     int TimerBombe = General::BombeTimer;
     Color colorBombe = gb.createColor(255, TimerBombe, 38);
@@ -150,17 +128,16 @@ public:
         _height = HEIGHT;
         _indexBombe = indexBombe;
         _playerPosingBomb = playerPoseBombe;
+        _typeEntity = TypeEntity::bombes;
     };
 
     int testctp = 0;
     void update() {
-
-        Utils::DebugMessageOnTopScreen("TimerBombe", TimerBombe);
-        if (TimerBombe < 14) {
-            gb.display.drawImage(_x-Brique::WIDTH, _y-Brique::HEIGHT, Explosion);
+        if (TimerBombe <= 14) {
+            gb.display.drawImage(_x-Brique::WIDTH-1, _y-Brique::HEIGHT-1, Explosion);
         }
         else {
-            gb.display.drawImage(_x, _y, Utils::BOMB_TEXTURE);
+            gb.display.drawImage(_x, _y, BombeImg);
         }
 
 
@@ -175,7 +152,7 @@ public:
             return;
         }
         colorBombe = gb.createColor(255, TimerBombe, 38);
-        TimerBombe -= 2;
+        TimerBombe -= 1;
     }
 };
 #pragma endregion
@@ -192,8 +169,12 @@ void setup() {
 void loop() {
     while (!gb.update());
     gb.display.clear();
-    gb.display.drawFastHLine(0, General::LineHeightScore, gb.display.width());
+    DrawBombe(); // on dessine les bombes en premier comme ça elles sont en arriere plan ( passe derriere les murs)
+    
+    gb.display.setColor(GRAY);
+    gb.display.fillRect(0, 0, gb.display.width(), 7);
     Draw();
+
     TouchEvent();
     player->update();
 }
@@ -209,13 +190,44 @@ void InstanceUnbreakBrique() {
     }
 }
 
+void InstanceBreakeableBrique() {
+
+
+
+    EntityArray[CompteurEntite++] = new Brique(x, y, true);
+
+    //int EcartBriqueX = Brique::WIDTH *2 ;
+    //int EcartBriqueY = Brique::HEIGHT * 2;
+
+    //for (int y = General::LineHeightScore + Brique::HEIGHT; y < 63; y += EcartBriqueY) {
+    //    for (int x = Brique::WIDTH; x < 77; x += EcartBriqueX) {
+    //        EntityArray[CompteurEntite++] = new Brique(x, y,true);
+    //    }
+    //}
+}
+
 
 void Draw() {
     for (Entity* entity : EntityArray) {
         if (entity == nullptr) {
             continue;
         }
-        entity->update();
+        if (entity->getTypeEntity() != TypeEntity::bombes)
+        {
+            entity->update();
+        }
+    }
+}
+
+void DrawBombe() {
+    for (Entity* entity : EntityArray) {
+        if (entity == nullptr) {
+            continue;
+        }
+        if (entity->getTypeEntity() == TypeEntity::bombes)
+        {
+            entity->update();
+        }
     }
 }
 
