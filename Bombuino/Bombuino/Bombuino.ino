@@ -158,9 +158,6 @@ public:
         Utils::DebugMessageOnTopScreen("TimerBombe", TimerBombe);
         if (TimerBombe < 14) {
             gb.display.drawImage(_x-Brique::WIDTH, _y-Brique::HEIGHT, Explosion);
-            Explosion.setFrame(1);
-            gb.display.drawImage(_x - Brique::WIDTH, _y - Brique::HEIGHT, Explosion);
-
         }
         else {
             gb.display.drawImage(_x, _y, Utils::BOMB_TEXTURE);
