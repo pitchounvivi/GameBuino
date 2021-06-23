@@ -8,8 +8,9 @@
 #include "Entity.h"
 #include "Utils.h"
 #include <Gamebuino-Meta.h>
+#include <./Graphics/Graphics.h>
 #include <cstdlib>
-#include "C:\Users\fabrice ferrere\Desktop\arduino1.8.5-Windows\arduino\portable\sketchbook\libraries\Gamebuino_META\src\utility\Graphics/Graphics.h"
+
 
 
 Image PlayerImg(Utils::ROBOT_TEXTURE);
