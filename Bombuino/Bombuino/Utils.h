@@ -17,7 +17,7 @@ class Utils
 		const static uint16_t EXPLOSION_TEXTURE[];
 		const static uint16_t BRIQUE_INCASSABLE[];
 		const static uint16_t ROBOT_TEXTURE[];
-
+		const static uint16_t BRIQUE_DESTRUCTIBLE[];
 	private:
 		Utils() {}
 };

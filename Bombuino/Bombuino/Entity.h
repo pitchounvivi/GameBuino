@@ -13,6 +13,7 @@ enum TypeEntity {
 	briques =0,
 	bombes=1,
 	players=2,
+	briquesDestructible,
 };
 
 class Entity {
