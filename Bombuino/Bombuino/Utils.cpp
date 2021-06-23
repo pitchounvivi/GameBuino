@@ -22,6 +22,11 @@ void Utils::DebugMessageOnBottomScreen(String texte, int value)
     gb.display.print(value);
 }
 
+int Utils::RandomInt() {
+    return rand() % 3;
+}
+
+
 
 const uint16_t Utils::BOMB_TEXTURE[] = {
     // metadata

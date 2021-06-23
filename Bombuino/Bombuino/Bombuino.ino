@@ -16,10 +16,10 @@
 Image PlayerImg(Utils::ROBOT_TEXTURE);
 Image Explosion(Utils::EXPLOSION_TEXTURE);
 Image BombeImg(Utils::BOMB_TEXTURE);
+
+
 const int maxEntite = 300;
 Entity* EntityArray[maxEntite] = { nullptr };
-
-
 
 
 #pragma region ENTITY TO MOVE
@@ -70,14 +70,22 @@ public:
     static const int PlayerMaxBombe = 2;
 
     int BombePosingNumber = 0;
+    Player* PlayerCible =nullptr;
+    int IndexPlayer;
+    Color colorPlayer;
 
-    Player(int x, int y, int width, int height) {
+    Player(int x, int y,TypeEntity typeEntity,int indexPlayer,const Color colorIA = WHITE) {
         _x = x;
         _y = y;
         _width = WIDTH;
         _height = HEIGHT;
-        gb.display.fillRect(_x, _y, _width, _height);
-        _typeEntity = TypeEntity::players;
+        IndexPlayer = indexPlayer;
+        _typeEntity = typeEntity;
+
+        if (typeEntity == TypeEntity::Ia) 
+        {
+            colorPlayer = colorIA;
+        }
     }
 
     int getX() {
@@ -92,8 +100,11 @@ public:
     int getHeight() {
         return _height;
     }
+    TypeEntity getType() {
+        return getTypeEntity();
+    }
 
-    void update(positionMove move) {
+    void Move(positionMove move) {
         switch (move)
         {
         case positionMove::DOWN:
@@ -113,13 +124,55 @@ public:
         }
     }
 
-    void update() {
-        //gb.display.setColor(WHITE);
-        //gb.display.fillRect(_x, _y, _width, _height);
-        gb.display.drawImage(_x, _y, PlayerImg);
+    void getCible(Player* PlayersArray[])
+    {
+        int cibleInt = IndexPlayer;
+        while (cibleInt == IndexPlayer) 
+        {
+            cibleInt = rand() % 3;
+        }
+        PlayerCible = PlayersArray[cibleInt];
     }
 
+    void update() {
+        if (getTypeEntity() == TypeEntity::Ia)
+        {
+            gb.display.setColor(colorPlayer);
+            gb.display.fillCircle(_x, _y, 2);
+            DebugPnj();
+
+            /*======================== GESTION DEPLACEMENT HAUT BAS =======================*/
+            //  pnj va en haut sinon il va en bas
+
+
+                
+                // si pas d'obstacle avance 
+                // si rencontre un bloc pose une bombe. 
+
+
+            /*======================== GESTION DEPLACEMENT COTÉ =======================*/
+            // si le x du joueur cible est plus petit que moi 
+            // je vais a gauche sinon a droite
+
+                // si pas d'obstacle avance 
+                // si rencontre un bloc pose une bombe. 
+        }
+        else 
+        {
+            gb.display.drawImage(_x, _y, PlayerImg);
+        }
+
+    }
+
+    void DebugPnj() {
+        gb.display.drawCircle(PlayerCible->getX(), PlayerCible->getY(),5);
+        gb.display.print(IndexPlayer);
+        gb.display.print(".");
+        gb.display.print(PlayerCible->IndexPlayer);
+        gb.display.print("-");
+    }
 };
+
 
 class Bombe : public Entity {
 
@@ -210,17 +263,26 @@ public:
         }
     }
 };
+
 #pragma endregion
 
+Player* MyPlayer;
+Player* PlayersArrays[3] = { nullptr };
 
-Player* player;
 int CompteurEntite = 0;
+int CompteurPlayer = 0;
 
 void setup() {
     gb.begin();
     InstanceBreakeableBrique();
     InstanceUnbreakBrique();
-    player = new Player(General::PlayerStartPositionX, General::PlayerStartPositionY, Player::WIDTH, Player::HEIGHT);
+    MyPlayer = new Player(General::PlayerStartPositionX, General::PlayerStartPositionY, TypeEntity::players, CompteurPlayer);
+    PlayersArrays[CompteurPlayer++] = MyPlayer;
+
+    //PlayersArrays[CompteurPlayer++] = new Player(71, 8,TypeEntity::Ia, CompteurPlayer, BLUE);
+
+    //PlayersArrays[CompteurPlayer++] = new Player(71, 56,TypeEntity::Ia, CompteurPlayer, RED);
+
 }
 
 void loop() {
@@ -229,9 +291,21 @@ void loop() {
     DrawBombe(); // on dessine les bombes en premier comme ça elles sont en arriere plan ( passe derriere les murs)
     DrawCadre();
     Draw();
-    Utils::DebugMessageOnTopScreen("NbEntity", CompteurEntite);
+    //Utils::DebugMessageOnTopScreen("NbEntity", CompteurEntite);
     TouchEvent();
-    player->update();
+    MyPlayer->update();
+    //for (Player* joueur : PlayersArrays)
+    //{
+    //    if (joueur->getType() == TypeEntity::players) {
+    //        continue;
+    //    }
+
+    //    if (joueur->PlayerCible == nullptr) 
+    //    {
+    //        joueur->getCible(PlayersArrays);
+    //    }
+    //    joueur->update();
+    //}
 }
 
 void InstanceUnbreakBrique() {
@@ -247,11 +321,6 @@ void InstanceUnbreakBrique() {
 
 void InstanceBreakeableBrique() {
 
-    //for (int y = 0; y < 63; y += Brique::HEIGHT) {
-    //    for (int x = 0; x < 77; x += Brique::WIDTH) {
-    //        EntityArray[CompteurEntite++] = new Brique(x, y,true);
-    //    }
-    //}
     for (int y = 7; y < 63; y += Brique::HEIGHT) 
     {
         for (int x = 1; x <= 75; x += Brique::WIDTH) {
@@ -310,7 +379,7 @@ void TouchEvent() {
         if (!PlayerCanMove(positionMove::UP)) {
             return;
         }
-        player->update(positionMove::UP);
+        MyPlayer->Move(positionMove::UP);
         //PlayerImg.setFrame(2);
     }
 
@@ -319,7 +388,7 @@ void TouchEvent() {
             return;
         }
 
-        player->update(positionMove::DOWN);
+        MyPlayer->Move(positionMove::DOWN);
         //PlayerImg.setFrame(0);
     }
 
@@ -327,7 +396,7 @@ void TouchEvent() {
         if (!PlayerCanMove(positionMove::LEFT)) {
             return;
         }
-        player->update(positionMove::LEFT);
+        MyPlayer->Move(positionMove::LEFT);
         //PlayerImg.setFrame(3);
     }
 
@@ -335,23 +404,23 @@ void TouchEvent() {
         if (!PlayerCanMove(positionMove::RIGHT)) {
             return;
         }
-        player->update(positionMove::RIGHT);
+        MyPlayer->Move(positionMove::RIGHT);
         //PlayerImg.setFrame(1);
     }
 
     if (gb.buttons.pressed(BUTTON_A)) {
-        if (player->BombePosingNumber == Player::PlayerMaxBombe) {
+        if (MyPlayer->BombePosingNumber == Player::PlayerMaxBombe) {
             return;
         }
 
-        EntityArray[CompteurEntite] = new Bombe(player->getX(), player->getY(), CompteurEntite, player);
+        EntityArray[CompteurEntite] = new Bombe(MyPlayer->getX(), MyPlayer->getY(), CompteurEntite, MyPlayer);
 
         CompteurEntite++;
         if (CompteurEntite >= maxEntite)
         {
             CompteurEntite = 0;
         }
-        player->BombePosingNumber++;
+        MyPlayer->BombePosingNumber++;
     }
 }
 
@@ -375,7 +444,7 @@ bool PlayerCanMove(positionMove moveTO) {
     if (moveTO == positionMove::LEFT || moveTO == positionMove::RIGHT)
     {
         // si on sort de l'écran
-        if (player->getX() + moveTO <= 0 || player->getX() + moveTO >= 77) {
+        if (MyPlayer->getX() + moveTO <= 0 || MyPlayer->getX() + moveTO >= 77) {
             return false;
         }
         gb.display.setCursor(0, 0);
@@ -384,7 +453,7 @@ bool PlayerCanMove(positionMove moveTO) {
         // si la position du joueur + ou - X entre en collision avec une entity alors il ne bouge pas
         for (Entity* entity : EntityArray) {
 
-            if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), player->getX() + moveTO, player->getY(), player->getWidth(), player->getHeight())) {
+            if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), MyPlayer->getX() + moveTO, MyPlayer->getY(), MyPlayer->getWidth(), MyPlayer->getHeight())) {
                 tmp = false;
             }
         }
@@ -392,13 +461,13 @@ bool PlayerCanMove(positionMove moveTO) {
     }
     else {
 
-        if (player->getY() + moveTO <= 7 || player->getY() + moveTO >= 63) {
+        if (MyPlayer->getY() + moveTO < 7 || MyPlayer->getY() + moveTO >= 63) {
             return false;
         }
 
         // si la position du joueur + ou - Y entre en collision avec une entity alors il ne bouge pas
         for (Entity* entity : EntityArray) {
-            if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), player->getX(), player->getY() + moveTO, player->getWidth(), player->getHeight())) {
+            if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), MyPlayer->getX(), MyPlayer->getY() + moveTO, MyPlayer->getWidth(), MyPlayer->getHeight())) {
                 tmp = false;
             }
         }

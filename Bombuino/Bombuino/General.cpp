@@ -6,7 +6,7 @@
 const int General::FPS = 40;
 
 int General::PlayerStartPositionX = 2;
-int General::PlayerStartPositionY = 16;
+int General::PlayerStartPositionY = 7;
 
 
 int General::LineHeightScore = 7;
