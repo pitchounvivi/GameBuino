@@ -24,8 +24,8 @@ void setup() {
     PlayersArrays[General::CompteurPlayers++] = new Players(General::MyPlayerStartPositionX, General::MyPlayerStartPositionY, TypeEntity::players, General::CompteurPlayers, PlayersImg);
 
     /*PNJ*/
-    //General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 8,TypeEntity::Ia, General::CompteurPlayers, BLUE);
-    //General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, RED);
+    PlayersArrays[General::CompteurPlayers++] = new Players(71, 8,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, BLUE);
+    PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, RED);
 
 }
 
@@ -37,20 +37,17 @@ void loop() {
     General::DrawCadre();
     General::DrawEntities();
     TouchEvent();
-    PlayersArrays[0]->update();
+    //PlayersArrays[0]->update();
 
-    //for (Players* joueur : General::PlayersArrays)
-    //{
-    //    if (joueur->getType() == TypeEntity::Players) {
-    //        continue;
-    //    }
+    for (Players* joueur : PlayersArrays)
+    {
 
-    //    if (joueur->PlayersCible == nullptr) 
-    //    {
-    //        joueur->getCible(General::PlayersArrays);
-    //    }
-    //    joueur->update();
-    //}
+        if (joueur->PlayersCible == nullptr && joueur->getType() != TypeEntity::players)
+        {
+            joueur->getCible(PlayersArrays);
+        }
+        joueur->update();
+    }
 }
 
 /// <summary>
@@ -79,19 +76,6 @@ void TouchEvent() {
     }
 
     if (gb.buttons.pressed(BUTTON_A)) {
-        // ai-je posé le max de bombe?
-        if (PlayersArrays[0]->BombePosingNumber == Players::PlayersMaxBombe) {
-            return;
-        }
-
-        General::EntityArray[General::CompteurEntite] = new Bombe(PlayersArrays[0]->getX(), PlayersArrays[0]->getY(), General::CompteurEntite, PlayersArrays[0]);
-
-        General::CompteurEntite++;
-        if (General::CompteurEntite >= General::maxEntite)
-        {
-            General::CompteurEntite = 0;
-        }
-        PlayersArrays[0]->BombePosingNumber++;
+        //Bombe::PoseBombe(PlayersArrays[0]);
     }
 }
-

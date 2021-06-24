@@ -2,6 +2,7 @@
 
 #ifndef _BOMBE_h
 #define _BOMBE_h
+#pragma once
 #include <Gamebuino-Meta.h>
 #include "Utils.h"
 #include "Entity.h"
@@ -14,6 +15,7 @@
 #else
 	#include "WProgram.h"
 #endif
+
 
 class Bombe : public Entity {
 
@@ -49,7 +51,7 @@ public:
 
 
         if (TimerBombe <= 0) {
-            General::EntityArray[_indexBombe] = NULL;
+            General::EntityArray[_indexBombe] = nullptr;
             _PlayerPosingBomb->BombePosingNumber--;
 
             if (_PlayerPosingBomb->BombePosingNumber <= 0) {
@@ -104,6 +106,23 @@ public:
 
 
         }
+    }
+
+
+    static void PoseBombe(Players* player) {
+        if (player->BombePosingNumber == Players::PlayersMaxBombe) {
+            return;
+        }
+    
+        General::EntityArray[General::CompteurEntite] = new Bombe(player->getX(), player->getY(), General::CompteurEntite, player);
+    
+        General::CompteurEntite++;
+    
+        if (General::CompteurEntite >= General::maxEntite)
+        {
+            General::CompteurEntite = 0;
+        }
+        player->BombePosingNumber++;
     }
 };
 

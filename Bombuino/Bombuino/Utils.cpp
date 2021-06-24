@@ -5,6 +5,8 @@
 #include "Utils.h"
 #include <Gamebuino-Meta.h>
 
+
+
 void Utils::DebugMessageOnTopScreen(String texte, int value)
 {
     gb.display.setCursorY(2);
@@ -22,8 +24,20 @@ void Utils::DebugMessageOnBottomScreen(String texte, int value)
     gb.display.print(value);
 }
 
+
 int Utils::RandomInt() {
     return rand() % 3;
+
+}
+
+
+/// <summary>
+/// Retourne le temps de réaction de l'IA 
+/// Entre 0.75s et 2s
+/// </summary>
+/// <returns></returns>
+int Utils::RandomTimePnjAction(){
+    return rand() % 50 + 30; // si 0 +30 = 30 soit 0.75s de temps de réation / si 50 +30 = 80 soit 2s de temps de réaction
 }
 
 const uint16_t Utils::BOMB_TEXTURE[] = {
@@ -195,6 +209,3 @@ const uint16_t Utils::BRIQUE_DESTRUCTIBLE[] = {
     0x2107, 0x318b, 0x318a, 0x2948, 0x318a, 0x2948, 0x31aa
 
 };
-
-//Image Explosion(Utils::EXPLOSION_TEXTURE);
-//Image BombeImg(Utils::BOMB_TEXTURE);

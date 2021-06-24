@@ -40,7 +40,6 @@ class General
 		static void DrawBombe();
 		static void DrawEntities();
 
-
 	private:
 		General() {}
 };

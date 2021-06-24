@@ -4,6 +4,7 @@
 
 #include "General.h"
 #include "Brique.h"
+
 const int General::FPS = 40;
 
 int General::MyPlayerStartPositionX = 2;
