@@ -2,7 +2,7 @@
 
 #ifndef _UTILS_h
 #define _UTILS_h
-
+#include <Gamebuino-Meta.h>
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
 #else
@@ -20,6 +20,8 @@ class Utils
 		const static uint16_t ROBOT_TEXTURE[];
 		const static uint16_t BRIQUE_DESTRUCTIBLE[];
 
+		//static Image Explosion;
+		//static Image BombeImg;
 		static int RandomInt();
 	private:
 		Utils() {}

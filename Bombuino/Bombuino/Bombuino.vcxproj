@@ -112,6 +112,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bombe.h" />
+    <ClInclude Include="Brique.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="Players.h" />
@@ -119,6 +121,8 @@
     <ClInclude Include="__vm\.Bombuino.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bombe.cpp" />
+    <ClCompile Include="Brique.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="General.cpp" />
     <ClCompile Include="Players.cpp" />

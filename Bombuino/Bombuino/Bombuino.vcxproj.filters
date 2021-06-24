@@ -33,6 +33,12 @@
     <ClInclude Include="Players.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Brique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bombe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -45,6 +51,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Players.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Brique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bombe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

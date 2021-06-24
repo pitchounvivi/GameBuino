@@ -26,8 +26,6 @@ int Utils::RandomInt() {
     return rand() % 3;
 }
 
-
-
 const uint16_t Utils::BOMB_TEXTURE[] = {
     // metadata
 
@@ -197,3 +195,6 @@ const uint16_t Utils::BRIQUE_DESTRUCTIBLE[] = {
     0x2107, 0x318b, 0x318a, 0x2948, 0x318a, 0x2948, 0x31aa
 
 };
+
+//Image Explosion(Utils::EXPLOSION_TEXTURE);
+//Image BombeImg(Utils::BOMB_TEXTURE);
