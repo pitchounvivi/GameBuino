@@ -76,6 +76,6 @@ void TouchEvent() {
     }
 
     if (gb.buttons.pressed(BUTTON_A)) {
-        //Bombe::PoseBombe(PlayersArrays[0]);
+        PlayersArrays[0]->PoseBombe();
     }
 }

@@ -7,6 +7,7 @@
 #include "Utils.h"
 #include "General.h"
 #include "Entity.h"
+#include "Bombe.h"
 
 
 
@@ -39,7 +40,7 @@ public:
     int IndexPlayers;
     Color colorPlayers;
     Image img;
-
+    Bombe* bombeArray[PlayersMaxBombe] = { nullptr };
     int TimerToMove = Utils::RandomTimePnjAction();
 
     Players(int x, int y, TypeEntity typeEntity, int indexPlayers, Image image, const Color colorIA = WHITE) {
@@ -109,6 +110,7 @@ public:
     }
 
     void update() {
+
         if (getTypeEntity() == TypeEntity::Ia)
         {
             gb.display.setColor(colorPlayers);
@@ -120,6 +122,27 @@ public:
         else
         {
             gb.display.drawImage(_x, _y, img);
+        }
+
+        int cpt = 0;
+
+
+        // Actualisation des bombes
+        for (Bombe* bombe : bombeArray) 
+        {
+            if (bombe == nullptr) {
+                continue;
+            }
+
+            if (bombe->TimerBombe <= 0) 
+            {
+                bombeArray[cpt] = nullptr;
+                BombePosingNumber--;
+                if (BombePosingNumber <= 0) {
+                    BombePosingNumber = 0;
+                }
+            }
+            cpt++;
         }
 
     }
@@ -186,7 +209,6 @@ public:
             if (typeEntite == TypeEntity::briquesDestructible) {
                 //Bombe::PoseBombe(this);
 
-
             }
 
             Move(positionMove::UP);
@@ -251,6 +273,24 @@ public:
         return tmp;
     }
 
+    void PoseBombe() {
+        if (this->BombePosingNumber ==Players::PlayersMaxBombe) {
+            return;
+        }
+        this->BombePosingNumber++;
+        Bombe* bombe = new Bombe(this->getX(), this->getY(), General::CompteurEntite);
+        bombeArray[BombePosingNumber] = bombe;
+
+        General::EntityArray[General::CompteurEntite] = bombe;
+
+        General::CompteurEntite++;
+
+        if (General::CompteurEntite >= General::maxEntite)
+        {
+            General::CompteurEntite = 100; // on efface pas les 100 premièere entite ( les briques etc...)
+        }
+
+    }
 };
 
 
