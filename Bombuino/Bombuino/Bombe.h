@@ -67,41 +67,75 @@ public:
             {
                 continue;
             }
-            Entity* tmp = General::EntityArray[i];
+            Entity* ent = General::EntityArray[i];
 
             // Je suis une brique ou un Players ?
-            if (tmp->getTypeEntity() == TypeEntity::briquesDestructible || tmp->getTypeEntity() == TypeEntity::players)
+            if (ent->getTypeEntity() == TypeEntity::briquesDestructible)
             {
 
                 // Collision avec le carré  de droite ?
-                if (gb.collide.rectRect(_x + 7, _y, Bombe::WIDTH, Bombe::HEIGHT, tmp->getX(), tmp->getY(), tmp->getWidth(), tmp->getHeight()))
+                if (gb.collide.rectRect(_x + General::RightMove, _y, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))
                 {
-                    // si c'est mon joueur 
 
-                    // si c'est une brique ou une IA:
+                    // si c'est une brique
                     General::EntityArray[i] = nullptr;
                 }
                 // Collision avec le carré de gauche? 
-                if (gb.collide.rectRect(_x + -7, _y, Bombe::WIDTH, Bombe::HEIGHT, tmp->getX(), tmp->getY(), tmp->getWidth(), tmp->getHeight()))
+                if (gb.collide.rectRect(_x + General::LeftMove, _y, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))
                 {
                     General::EntityArray[i] = nullptr;
                 }
                 // Collision avec le carré d'en haut?
-                if (gb.collide.rectRect(_x, _y + -8, Bombe::WIDTH, Bombe::HEIGHT, tmp->getX(), tmp->getY(), tmp->getWidth(), tmp->getHeight()))
+                if (gb.collide.rectRect(_x, _y + General::UpMove, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))
                 {
                     General::EntityArray[i] = nullptr;
                 }
                 // si collision avec le carré du bas 
-                if (gb.collide.rectRect(_x, _y + 8, Bombe::WIDTH, Bombe::HEIGHT, tmp->getX(), tmp->getY(), tmp->getWidth(), tmp->getHeight()))
+                if (gb.collide.rectRect(_x, _y + General::DownMove, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))
                 {
                     General::EntityArray[i] = nullptr;
                 }
             }
+        }
 
 
+        for (int i = 0; i < General::NbPlayer;i++) 
+        {
+            if (General::PlayersArrays[i] == nullptr)
+            {
+                continue;
+            }
+            Entity* player = General::PlayersArrays[i];
+
+            if (gb.collide.rectRect(_x, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
+            {
+                // si c'est une brique
+                General::PlayersArrays[i] = nullptr;
+            }
+
+            // Collision avec le carré  de droite ?
+            if (gb.collide.rectRect(_x + General::RightMove, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
+            {
+                // si c'est une brique
+                General::PlayersArrays[i] = nullptr;
+            }
+            // Collision avec le carré de gauche? 
+            if (gb.collide.rectRect(_x + General::LeftMove, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
+            {
+                General::PlayersArrays[i] = nullptr;
+            }
+            // Collision avec le carré d'en haut?
+            if (gb.collide.rectRect(_x, _y + General::UpMove, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
+            {
+                General::PlayersArrays[i] = nullptr;
+            }
+            // si collision avec le carré du bas 
+            if (gb.collide.rectRect(_x, _y + General::DownMove, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
+            {
+                General::PlayersArrays[i] = nullptr;
+            }
         }
     }
-
 };
 
 

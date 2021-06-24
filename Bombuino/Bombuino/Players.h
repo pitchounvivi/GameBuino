@@ -28,7 +28,7 @@ enum positionMove
 };
 
 
-class Players : Entity {
+class Players : public Entity {
 public:
     static const int WIDTH = 5;
     static const int HEIGHT = 6;
@@ -99,14 +99,15 @@ public:
         }
     }
 
-    void getCible(Players* PlayersArray[])
+    void getCible()
     {
         int cibleInt = IndexPlayers;
         while (cibleInt == IndexPlayers)
         {
             cibleInt = rand() % 3;
         }
-        PlayersCible = PlayersArray[cibleInt];
+
+        PlayersCible = (Players*) General::PlayersArrays[cibleInt];
     }
 
     void update() {
@@ -151,10 +152,10 @@ public:
     /// </summary>
     void DebugPnj() {
         gb.display.drawCircle(PlayersCible->getX(), PlayersCible->getY(), 5);
-        gb.display.print(IndexPlayers);
-        gb.display.print(".");
-        gb.display.print(PlayersCible->IndexPlayers);
-        gb.display.print("-");
+        //gb.display.print(IndexPlayers);
+        //gb.display.print(".");
+        //gb.display.print(PlayersCible->IndexPlayers);
+        //gb.display.print("-");
     }
 
     bool PlayersCanMove(positionMove moveTO) {
@@ -205,16 +206,26 @@ public:
             //  pnj va en haut sinon il va en bas
         if (this->PlayersCible->getY() < _y) {
             TypeEntity typeEntite = GetTypeEntityAround(UP);
+            gb.display.print("UP");
+            gb.display.print(typeEntite);
+            gb.display.print("-");
 
-            if (typeEntite == TypeEntity::briquesDestructible) {
-                //Bombe::PoseBombe(this);
-
+            if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia)
+            {
+                PoseBombe();
             }
-
             Move(positionMove::UP);
         }
         else {
+            TypeEntity typeEntite = GetTypeEntityAround(DOWN);
+            gb.display.print("DOWN");
+            gb.display.print(typeEntite);
+            gb.display.print("-");
+            if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
+                PoseBombe();
+            }
             Move(positionMove::DOWN);
+
         }
 
         // si pas d'obstacle avance 
@@ -228,9 +239,28 @@ public:
         // si pas d'obstacle avance 
         // si rencontre un bloc pose une bombe. 
         if (this->PlayersCible->getX() < _x) {
+            TypeEntity typeEntite = GetTypeEntityAround(LEFT);
+
+            gb.display.print("LEFT");
+            gb.display.print(typeEntite);
+            gb.display.print("-");
+
+            gb.display.print(typeEntite);
+            if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
+                PoseBombe();
+            }
             Move(positionMove::LEFT);
         }
         else {
+
+            TypeEntity typeEntite = GetTypeEntityAround(RIGHT);
+
+            gb.display.print("RIGHT");
+            gb.display.print(typeEntite);
+            gb.display.print("-");
+            if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
+                PoseBombe();
+            }
             Move(positionMove::RIGHT);
         }
     }
@@ -240,32 +270,20 @@ public:
         TypeEntity tmp = TypeEntity::none;
         if (moveTO == positionMove::LEFT || moveTO == positionMove::RIGHT)
         {
-            // si on sort de l'écran
-            if (this->getX() + moveTO <= 0 || this->getX() + moveTO >= 77) {
-                return TypeEntity::none;
-            }
-            gb.display.setCursor(0, 0);
-            gb.display.setColor(YELLOW);
-
             // si la position du joueur + ou - X entre en collision avec une entity alors il ne bouge pas
             for (Entity* entity : General::EntityArray) {
 
-                if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), entity->getX() + moveTO, entity->getY(), entity->getWidth(), entity->getHeight())) {
-                    tmp = entity->getTypeEntity();
+                if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), this->getX() + moveTO, this->getY(), this->getWidth(), this->getHeight())) {
+                    return entity->getTypeEntity();
                 }
             }
 
         }
         else {
-
-            if (this->getY() + moveTO < 7 || this->getY() + moveTO >= 63) {
-                tmp = TypeEntity::none;
-            }
-
             // si la position du joueur + ou - Y entre en collision avec une entity alors il ne bouge pas
             for (Entity* entity : General::EntityArray) {
-                if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), entity->getX(), entity->getY() + moveTO, entity->getWidth(), entity->getHeight())) {
-                    tmp = entity->getTypeEntity();
+                if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), this->getX(), this->getY() + moveTO, this->getWidth(), this->getHeight())) {
+                    return entity->getTypeEntity();
                 }
             }
         }

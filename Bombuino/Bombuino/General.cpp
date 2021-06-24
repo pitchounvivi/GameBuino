@@ -4,6 +4,7 @@
 
 #include "General.h"
 #include "Brique.h"
+#include "Players.h"
 
 const int General::FPS = 40;
 
@@ -16,6 +17,10 @@ int General::PositionEndDrawX = 77;
 int General::CompteurEntite = 0;
 int General::CompteurPlayers = 0;
 
+int General::UpMove = -8;
+int General::DownMove = 8;
+int General::LeftMove = -7;
+int General::RightMove = 7; 
 
 
 /*" Surcharge de la taille de l'écran car on a travailler sur l'écran de 79x63... Rendu compte trop tard"*/
@@ -24,8 +29,11 @@ int General::ScreenHeight = 63;
 
 // Bombe dure 2s
 int General::BombeTimer= General::FPS*2; 
+const static int NbPlayer = 3;
 
 Entity* General::EntityArray[300] = { nullptr };
+Entity* General::PlayersArrays[3] = { nullptr };
+
 
 
 /// <summary>

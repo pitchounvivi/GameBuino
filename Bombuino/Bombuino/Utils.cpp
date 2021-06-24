@@ -7,7 +7,7 @@
 
 
 
-void Utils::DebugMessageOnTopScreen(String texte, int value)
+void Utils::DebugValueOnTopScreen(String texte, int value)
 {
     gb.display.setCursorY(2);
     gb.display.setCursorX(2);
@@ -15,7 +15,7 @@ void Utils::DebugMessageOnTopScreen(String texte, int value)
     gb.display.print(value);
 }
 
-void Utils::DebugMessageOnBottomScreen(String texte, int value)
+void Utils::DebugValueOnBottomScreen(String texte, int value)
 {
     gb.display.setColor(WHITE);
     gb.display.setCursorY(58);
@@ -23,7 +23,6 @@ void Utils::DebugMessageOnBottomScreen(String texte, int value)
     gb.display.print(texte + ":");
     gb.display.print(value);
 }
-
 
 int Utils::RandomInt() {
     return rand() % 3;
@@ -37,7 +36,7 @@ int Utils::RandomInt() {
 /// </summary>
 /// <returns></returns>
 int Utils::RandomTimePnjAction(){
-    return rand() % 50 + 30; // si 0 +30 = 30 soit 0.75s de temps de réation / si 50 +30 = 80 soit 2s de temps de réaction
+    return rand() % 20 + 20; // si 0 +30 = 30 soit 0.75s de temps de réation / si 50 +30 = 80 soit 2s de temps de réaction
 }
 
 const uint16_t Utils::BOMB_TEXTURE[] = {
