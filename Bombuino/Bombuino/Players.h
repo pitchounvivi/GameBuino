@@ -120,10 +120,10 @@ public:
 		if (getTypeEntity() == TypeEntity::Ia)
 		{
 			gb.display.setColor(colorPlayers);
-			gb.display.fillCircle(_x, _y, 2);
+			gb.display.fillCircle(_x+3, _y+3, 2);
 			DebugPnj();
 			TimerToMove--;
-			DeplacementPnj(this);
+			DeplacementPnj();
 		}
 		else
 		{
@@ -202,7 +202,7 @@ public:
 		return tmp;
 	}
 
-	positionMove* PnjCanMoveInSecurity()
+	positionMove *PnjCanMoveInSecurity()
 	{
 
 		positionMove positionArray[4] = { UP,DOWN,LEFT,RIGHT };
@@ -220,8 +220,7 @@ public:
 			if (pos == UP || pos == DOWN) {
 				NewPosY = this->getY() + pos;
 				NewPosX = this->getX();
-
-				if (NewPosY< General::PositionZero || NewPosY> General::ScreenHeight)
+				if (NewPosY< General::HeightCadreScore || NewPosY> General::ScreenHeight)
 				{
 					continue;
 				}
@@ -229,7 +228,7 @@ public:
 			else {
 				NewPosY = this->getY();
 				NewPosX = this->getX() + pos;
-				if (NewPosX< General::PositionZero || NewPosX> General::ScreenWidth)
+				if (NewPosX< General::PositionStartDrawX || NewPosX> General::PositionEndDrawX)
 				{
 					continue;
 				}
@@ -314,6 +313,11 @@ public:
 
 	}
 
+	/// <summary>
+	/// Retourne la derrnière position du joueur.
+	/// </summary>
+	/// <param name="pos"></param>
+	/// <returns></returns>
 	positionMove GetLastPos(positionMove pos)
 	{
 		switch (pos)
@@ -338,106 +342,100 @@ public:
 		}
 	}
 
-	void DeplacementPnj(Players* player) {
+	void DeplacementPnj() {
 		if (TimerToMove > 0) {
 			return;
 		}
-
-
 		TimerToMove = Utils::RandomTimePnjAction();
 
-		/*======================== GESTION DEPLACEMENT HAUT BAS =======================*/
-			//  pnj va en haut sinon il va en bas
-		if (this->PlayersCible->getY() < _y) {
-			TypeEntity typeEntite = GetTypeEntityAround(UP);
-
-			if (typeEntite == emptyCase)
-			{
-				Move(UP);
-			}
-
-			if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia)
-			{
-				positionMove* pos = PnjCanMoveInSecurity();
-				if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
-				{
-
-				}
-				else {
-					PoseBombe();
-					Move(posArrayToMoveInSecurity[0]);
-					Move(posArrayToMoveInSecurity[1]);
-				}
-			}
-		}
-		else {
-			TypeEntity typeEntite = GetTypeEntityAround(DOWN);
-			if (typeEntite == emptyCase)
-			{
-				Move(DOWN);
-			}
-			if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
-				positionMove* pos = PnjCanMoveInSecurity();
-				if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
-				{
-
-				}
-				else {
-					PoseBombe();
-					Move(posArrayToMoveInSecurity[0]);
-					Move(posArrayToMoveInSecurity[1]);
-				}
-			}
-
-		}
-
-		/*======================== GESTION DEPLACEMENT COTÉ =======================*/
-		// si le x du joueur cible est plus petit que moi 
-		// je vais a gauche sinon a droite
-
-			// si pas d'obstacle avance 
-			// si rencontre un bloc pose une bombe. 
-		if (this->PlayersCible->getX() < _x) {
-			TypeEntity typeEntite = GetTypeEntityAround(LEFT);
-			if (typeEntite == emptyCase)
-			{
-				Move(LEFT);
-			}
-			// s'il a une brique un joueur ou une ia il pose une bombe et s'écarte
-			if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
-				positionMove* pos = PnjCanMoveInSecurity();
-				if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
-				{
-
-				}
-				else {
-					PoseBombe();
-					Move(posArrayToMoveInSecurity[0]);
-					Move(posArrayToMoveInSecurity[1]);
-				}
-			}
-		}
-		else {
-			TypeEntity typeEntite = GetTypeEntityAround(RIGHT);
-			if (typeEntite == emptyCase)
-			{
-				Move(RIGHT);
-			}
-			if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
-				positionMove* pos = PnjCanMoveInSecurity();
-				if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
-				{
-					
-				}
-				else {
-					PoseBombe();
-					Move(posArrayToMoveInSecurity[0]);
-					Move(posArrayToMoveInSecurity[1]);
-				}
-			}
-		}
 		posArrayToMoveInSecurity[0] = positionMove::NONE;
 		posArrayToMoveInSecurity[1] = positionMove::NONE;
+
+		// je regarde ce qu'il y a sur la case courante:
+		TypeEntity typeEntiteInCurrentCase = GetEntityInCurrentCase();
+
+		if (typeEntiteInCurrentCase == TypeEntity::bombes)
+		{
+			PnjCanMoveInSecurity();
+			Move(posArrayToMoveInSecurity[0]);
+			Move(posArrayToMoveInSecurity[1]);
+			return;
+		}
+
+		if (this->BombePosingNumber != 0) {
+			return;
+		}
+
+		positionMove pmvTmp = GetEmptyCaseBetweenIa();
+
+		if (pmvTmp != NONE) 
+		{
+			Move(pmvTmp);
+		}
+		if (Action(UP))
+		{
+			return;
+		}		
+		if (Action(DOWN))
+		{
+			return;
+		}		
+		if (Action(LEFT))
+		{
+			return;
+		}		
+		if (Action(RIGHT))
+		{
+			return;
+		}
+		
+		///*======================== GESTION DEPLACEMENT HAUT BAS =======================*/
+		//	//  pnj va en haut sinon il va en bas
+		//if (this->PlayersCible->getY() < _y) {
+		//	Action(UP);
+		//}
+		//else {
+		//	Action(DOWN);
+		//}
+
+		///*======================== GESTION DEPLACEMENT COTÉ =======================*/
+		//// si le x du joueur cible est plus petit que moi 
+		//// je vais a gauche sinon a droite
+
+		//	// si pas d'obstacle avance 
+		//	// si rencontre un bloc pose une bombe. 
+		//if (this->PlayersCible->getX() < _x) {
+		//	Action(LEFT);
+		//}
+		//else {
+		//	Action(RIGHT);
+		//}
+
+		posArrayToMoveInSecurity[0] = positionMove::NONE;
+		posArrayToMoveInSecurity[1] = positionMove::NONE;
+	}
+
+	bool Action(positionMove pos)
+	{
+		TypeEntity typeEntite = GetTypeEntityAround(pos);
+
+		// s'il a une brique un joueur ou une ia il pose une bombe et s'écarte
+		if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
+			PnjCanMoveInSecurity();
+			if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
+			{
+			}
+			else {
+				PoseBombe();
+				Move(posArrayToMoveInSecurity[0]);
+				gb.display.print("====>");
+				gb.display.print(posArrayToMoveInSecurity[0]);
+				Move(posArrayToMoveInSecurity[1]);
+				gb.display.print(posArrayToMoveInSecurity[1]);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	TypeEntity GetTypeEntityAround(positionMove moveTO)
@@ -474,6 +472,95 @@ public:
 
 		return TypeEntity::emptyCase;
 	}
+
+	TypeEntity GetEntityInCurrentCase() 
+	{
+		// si la position du joueur + ou - X entre en collision avec une entity 
+		for (Entity* entity : General::EntityArray) {
+
+			if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), this->getX(), this->getY(), this->getWidth(), this->getHeight())) {
+				return entity->getTypeEntity();
+			}
+		}
+
+		for (Entity* player : General::PlayersArrays) {
+			if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), this->getX(), this->getY(), this->getWidth(), this->getHeight())) {
+				return player->getTypeEntity();
+			}
+		}
+	}
+	
+	positionMove GetEmptyCaseBetweenIa() {
+		positionMove positionArray[4] = { UP,DOWN,LEFT,RIGHT };
+		positionMove EmptyCaseArray[4]{};
+
+		int cptEmpty = 0;
+		for (positionMove pos : positionArray)
+		{
+			int NewPosX;
+			int NewPosY;
+			if (pos == UP || pos == DOWN) {
+				NewPosY = this->getY() + pos;
+				NewPosX = this->getX();
+
+				if (NewPosY< General::HeightCadreScore || NewPosY> General::ScreenHeight)
+				{
+					continue;
+				}
+			}
+			else {
+				NewPosY = this->getY();
+				NewPosX = this->getX() + pos;
+				if (NewPosX< General::PositionStartDrawX || NewPosX> General::PositionEndDrawX)
+				{
+					continue;
+				}
+			}
+
+			bool hasRencontreEntityInPerimeter = false;
+
+			// si la position du joueur + ou - X entre en collision avec une entity 
+			for (Entity* entity : General::EntityArray) {
+
+				if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
+					// si je rencontre quelque choses
+					hasRencontreEntityInPerimeter = true;
+				}
+			}
+
+			for (Entity* player : General::PlayersArrays) {
+				if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
+					hasRencontreEntityInPerimeter = true;
+				}
+			}
+
+			// si on a uen collision avec l'ia sur la case rechercher
+			// on ne l'ajoute pas à au tableau
+			if (hasRencontreEntityInPerimeter)
+			{
+				continue;
+			}
+			else 
+			{
+				EmptyCaseArray[cptEmpty] = pos;
+				cptEmpty++;
+			}
+		}
+
+		// on récupère une position random ou bouge le joueur en fonction du nombree d'empty case trouvé:
+
+		gb.display.print(cptEmpty);
+		if (cptEmpty == 0) 
+		{
+			return positionMove::NONE;
+		}
+
+		int random = rand() % cptEmpty;
+
+		return EmptyCaseArray[random];
+	}
+
+
 
 	void PoseBombe() {
 		if (this->BombePosingNumber == Players::PlayersMaxBombe) {

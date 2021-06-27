@@ -24,7 +24,7 @@ void setup() {
     
     /*PNJ*/
     General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 8,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, BLUE);
-    General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, RED);
+    //General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, RED);
 
 }
 
