@@ -22,6 +22,8 @@ int General::DownMove = 8;
 int General::LeftMove = -7;
 int General::RightMove = 7; 
 
+char* General::generalTexte = "";
+char* General::generalTexte2 = "";
 
 /*" Surcharge de la taille de l'écran car on a travailler sur l'écran de 79x63... Rendu compte trop tard"*/
 int General::ScreenWidth = 79;
@@ -68,7 +70,7 @@ void General::InstanceBreakeableBrique() {
                 (x == 71 && y == 15) ||
                 (x == 1 && y == 47) ||
                 (x == 1 && y == 55) ||
-                (x == 71 && y == 55) ||
+                (x == 71 && y == 47) ||
                 (x == 8 && y == 55) ||
                 (x == 64 && y == 55) ||
                 (x == 71 && y == 55)

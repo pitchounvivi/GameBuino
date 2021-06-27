@@ -32,7 +32,7 @@ void loop() {
     while (!gb.update());
     gb.display.clear();
     General::DrawBombe();
-    General::DrawCadre();
+    //General::DrawCadre();
     General::DrawEntities();
     TouchEvent();
 
@@ -51,6 +51,7 @@ void loop() {
         }
         joueur->update();
     }
+
 }
 
 

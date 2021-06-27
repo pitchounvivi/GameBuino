@@ -33,7 +33,8 @@ class General
 		static int DownMove;
 		static int LeftMove;
 		static int RightMove;
-
+		static char* generalTexte;
+		static char* generalTexte2;
 		const static int maxEntite = 300;
 		static Entity* EntityArray[maxEntite];
 		const static int NbPlayer = 3;
