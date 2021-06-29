@@ -44,11 +44,6 @@ void loop() {
         }
 
         Players* joueur =(Players*) ent;
-
-        if (joueur->PlayersCible == nullptr && joueur->getType() != TypeEntity::players)
-        {
-            joueur->getCible();
-        }
         joueur->update();
     }
 

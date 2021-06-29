@@ -34,7 +34,6 @@ public:
 
 
 	int BombePosingNumber = 0;
-	Players* PlayersCible = nullptr;
 	int IndexPlayers;
 	Color colorPlayers;
 	Image img;
@@ -99,16 +98,6 @@ public:
 		}
 	}
 
-	void getCible()
-	{
-		int cibleInt = IndexPlayers;
-		while (cibleInt == IndexPlayers)
-		{
-			cibleInt = rand() % 3;
-		}
-
-		PlayersCible = (Players*)General::PlayersArrays[cibleInt];
-	}
 
 	void update() {
 
@@ -157,11 +146,7 @@ public:
 	/// Affiche un cercle sur la cible du joueur qui le prends en chasse
 	/// </summary>
 	void DebugPnj() {
-		gb.display.drawCircle(PlayersCible->getX(), PlayersCible->getY(), 5);
-		//gb.display.print(IndexPlayers);
-		//gb.display.print(".");
-		//gb.display.print(PlayersCible->IndexPlayers);
-		//gb.display.print("-");
+
 	}
 
 	bool PlayersCanMove(positionMove moveTO) {
@@ -388,31 +373,6 @@ public:
 		{
 			return;
 		}
-		
-		///*======================== GESTION DEPLACEMENT HAUT BAS =======================*/
-		//	//  pnj va en haut sinon il va en bas
-		//if (this->PlayersCible->getY() < _y) {
-		//	Action(UP);
-		//}
-		//else {
-		//	Action(DOWN);
-		//}
-
-		///*======================== GESTION DEPLACEMENT COTÉ =======================*/
-		//// si le x du joueur cible est plus petit que moi 
-		//// je vais a gauche sinon a droite
-
-		//	// si pas d'obstacle avance 
-		//	// si rencontre un bloc pose une bombe. 
-		//if (this->PlayersCible->getX() < _x) {
-		//	Action(LEFT);
-		//}
-		//else {
-		//	Action(RIGHT);
-		//}
-
-		posArrayToMoveInSecurity[0] = positionMove::NONE;
-		posArrayToMoveInSecurity[1] = positionMove::NONE;
 	}
 
 	bool Action(positionMove pos)
@@ -559,8 +519,6 @@ public:
 
 		return EmptyCaseArray[random];
 	}
-
-
 
 	void PoseBombe() {
 		if (this->BombePosingNumber == Players::PlayersMaxBombe) {
