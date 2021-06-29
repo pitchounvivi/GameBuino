@@ -21,6 +21,9 @@ class Utils
 		const static uint16_t BRIQUE_INCASSABLE[];
 		const static uint16_t ROBOT_TEXTURE[];
 		const static uint16_t BRIQUE_DESTRUCTIBLE[];
+		const static uint16_t ALIEN_TEXTURE[];
+		const static uint16_t WOMAN_TEXTURE[];
+		const static uint16_t DOG_TEXTURE[];
 
 		static int RandomInt();
 		static int RandomTimePnjAction();

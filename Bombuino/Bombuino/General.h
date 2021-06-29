@@ -39,8 +39,8 @@ class General
 		static int generalInt2;
 		const static int maxEntite = 300;
 		static Entity* EntityArray[maxEntite];
-		const static int NbPlayer = 3;
-		static Entity* PlayersArrays[3];
+		const static int NbPlayer = 4;
+		static Entity* PlayersArrays[4];
 		static void InstanceUnbreakBrique();
 		static void InstanceBreakeableBrique();
 		static void DrawCadre();

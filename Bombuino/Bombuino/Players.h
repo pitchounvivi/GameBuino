@@ -36,19 +36,19 @@ public:
 	int BombePosingNumber = 0;
 	int IndexPlayers;
 	Color colorPlayers;
-	Image img;
+	Image &img;
 	Bombe* bombeArray[PlayersMaxBombe] = { nullptr };
 	int TimerToMove = Utils::RandomTimePnjAction();
 	positionMove posArrayToMoveInSecurity[2];
 
-	Players(int x, int y, TypeEntity typeEntity, int indexPlayers, Image image, const Color colorIA = WHITE) {
+	Players(int x, int y, TypeEntity typeEntity, int indexPlayers, Image &image, const Color colorIA = WHITE) :img(image)
+	{
 		_x = x;
 		_y = y;
 		_width = WIDTH;
 		_height = HEIGHT;
 		IndexPlayers = indexPlayers;
 		_typeEntity = typeEntity;
-		img = image;
 		if (typeEntity == TypeEntity::Ia)
 		{
 			colorPlayers = colorIA;
@@ -77,21 +77,25 @@ public:
 		{
 		case positionMove::DOWN:
 			if (PlayersCanMove(DOWN)) {
+				img.setFrame(0);
 				_y += DOWN;
 			}
 			break;
 		case positionMove::LEFT:
 			if (PlayersCanMove(LEFT)) {
+				img.setFrame(2);
 				_x += LEFT;
 			}
 			break;
 		case positionMove::RIGHT:
 			if (PlayersCanMove(RIGHT)) {
+				img.setFrame(3);
 				_x += RIGHT;
 			}
 			break;
 		case positionMove::UP:
 			if (PlayersCanMove(UP)) {
+				img.setFrame(1);
 				_y += UP;
 			}
 			break;
@@ -101,21 +105,15 @@ public:
 
 	void update() {
 
-		//gb.display.print(this->IndexPlayers);
-		//gb.display.print(".");
-		//gb.display.print(this->BombePosingNumber);
-		//gb.display.print("-");
-
 		if (getTypeEntity() == TypeEntity::Ia)
 		{
-			gb.display.setColor(colorPlayers);
-			gb.display.fillCircle(_x+3, _y+3, 2);
+			gb.display.drawImage(_x+1, _y-2, img);
 			TimerToMove--;
 			DeplacementPnj();
 		}
 		else
 		{
-			gb.display.drawImage(_x, _y+1, img);
+			gb.display.drawImage(_x, _y-2, img);
 		}
 
 		int cpt = 0;
@@ -130,7 +128,6 @@ public:
 
 			if (bombe->TimerBombe <= 0)
 			{
-				/*General::EntityArray[bombe->_indexBombe] = nullptr;*/
 				bombeArray[cpt] = nullptr;
 				this->BombePosingNumber--;
 				if (BombePosingNumber <= 0) {
@@ -147,7 +144,7 @@ public:
 
 		if (moveTO == positionMove::LEFT || moveTO == positionMove::RIGHT)
 		{
-			// si on sort de l'écran
+			// si on sort de l'?cran
 			if (this->getX() + moveTO <= 0 || this->getX() + moveTO >= 77) {
 				return false;
 			}
@@ -233,17 +230,17 @@ public:
 				continue;
 			}
 
-			// si j'ai rien rencontrer dans le périmètre
+			// si j'ai rien rencontrer dans le p?rim?tre
 			posArrayToMoveInSecurity[0] = pos;
 			lastPos = GetLastPos(posArrayToMoveInSecurity[0]);
 
-			// je regarde dans le périmètre de la futur position :
+			// je regarde dans le p?rim?tre de la futur position :
 			for (positionMove posPlus : positionArray)
 			{
 				int NewPosXPlus;
 				int NewPosYPlus;
 
-				// je ne prends pas en compte la position d'où je viens:
+				// je ne prends pas en compte la position d'o? je viens:
 				if (posPlus == lastPos) {
 					continue;
 				}
@@ -303,7 +300,7 @@ public:
 	}
 
 	/// <summary>
-	/// Retourne la derrnière position du joueur.
+	/// Retourne la derrni?re position du joueur.
 	/// </summary>
 	/// <param name="pos"></param>
 	/// <returns></returns>
@@ -383,7 +380,7 @@ public:
 	{
 		TypeEntity typeEntite = GetTypeEntityAround(pos);
 
-		// s'il a une brique un joueur ou une ia il pose une bombe et s'écarte
+		// s'il a une brique un joueur ou une ia il pose une bombe et s'?carte
 		if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
 			PnjCanMoveInSecurity();
 			if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
@@ -395,10 +392,6 @@ public:
 			}
 			else {
 				PoseBombe();
-				/*General::generalTexte = "pOSE BOMBE Y:";
-				General::generalInt = posArrayToMoveInSecurity[0];
-				General::generalInt2 = posArrayToMoveInSecurity[1];
-				General::Pause = true;*/
 				Move(posArrayToMoveInSecurity[0]);
 				Move(posArrayToMoveInSecurity[1]);
 				return true;
@@ -504,7 +497,7 @@ public:
 			}
 
 			// si on a uen collision avec l'ia sur la case rechercher
-			// on ne l'ajoute pas à au tableau
+			// on ne l'ajoute pas ? au tableau
 			if (hasRencontreEntityInPerimeter)
 			{
 				continue;
@@ -516,7 +509,7 @@ public:
 			}
 		}
 
-		// on récupère une position random ou bouge le joueur en fonction du nombree d'empty case trouvé:
+		// on r?cup?re une position random ou bouge le joueur en fonction du nombree d'empty case trouv?:
 
 		gb.display.print(cptEmpty);
 		if (cptEmpty == 0) 
@@ -543,7 +536,7 @@ public:
 
 		if (General::CompteurEntite >= General::maxEntite)
 		{
-			General::CompteurEntite = 100; // on efface pas les 100 premièere entite ( les briques etc...)
+			General::CompteurEntite = 100; // on efface pas les 100 premi?ere entite ( les briques etc...)
 		}
 
 	}

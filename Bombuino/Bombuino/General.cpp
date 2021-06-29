@@ -33,10 +33,10 @@ int General::ScreenHeight = 63;
 
 // Bombe dure 2s
 int General::BombeTimer= General::FPS*2; 
-const static int NbPlayer = 3;
+const static int NbPlayer = 4;
 
 Entity* General::EntityArray[300] = { nullptr };
-Entity* General::PlayersArrays[3] = { nullptr };
+Entity* General::PlayersArrays[NbPlayer] = { nullptr };
 
 bool General::Pause = false;
 
