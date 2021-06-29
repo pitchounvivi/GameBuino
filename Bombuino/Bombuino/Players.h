@@ -105,16 +105,9 @@ public:
 
 	void update() {
 
-		//gb.display.print(this->IndexPlayers);
-		//gb.display.print(".");
-		//gb.display.print(this->BombePosingNumber);
-		//gb.display.print("-");
-
 		if (getTypeEntity() == TypeEntity::Ia)
 		{
 			gb.display.drawImage(_x+1, _y-2, img);
-			//gb.display.setColor(colorPlayers);
-			//gb.display.fillCircle(_x+3, _y+3, 2);
 			TimerToMove--;
 			DeplacementPnj();
 		}
@@ -135,7 +128,6 @@ public:
 
 			if (bombe->TimerBombe <= 0)
 			{
-				/*General::EntityArray[bombe->_indexBombe] = nullptr;*/
 				bombeArray[cpt] = nullptr;
 				this->BombePosingNumber--;
 				if (BombePosingNumber <= 0) {

@@ -34,13 +34,7 @@ void setup() {
 
 void loop() {
     while (!gb.update());
-    //if (General::Pause) {
-    //    gb.display.print(General::generalTexte);
-    //    gb.display.print(General::generalInt);
-    //    gb.display.print(".");
-    //    gb.display.print(General::generalInt2);
-    //    return;
-    //}
+    gb.display.clear();
     TouchEvent();
     General::DrawBombe();
     General::DrawCadre();
@@ -67,40 +61,25 @@ void TouchEvent() {
     Players* MyPlayer = (Players*)General::PlayersArrays[0];
 
     if (gb.buttons.pressed(BUTTON_UP)) {
-        //PlayersImg.setFrame(1);
         MyPlayer->Move(positionMove::UP);
-        //MyPlayer->img = PlayersImg;
     }
 
     if (gb.buttons.pressed(BUTTON_DOWN)) {
-        PlayersImg.setFrame(0);
         MyPlayer->Move(positionMove::DOWN);
-        MyPlayer->img = PlayersImg;
-
     }
 
     if (gb.buttons.pressed(BUTTON_LEFT)) {
-        //PlayersImg.setFrame(2);
         MyPlayer->Move(positionMove::LEFT);
-        //MyPlayer->img = PlayersImg;
-
     }
 
     if (gb.buttons.pressed(BUTTON_RIGHT)) {
-        //PlayersImg.setFrame(3);
         MyPlayer->Move(positionMove::RIGHT);
-        //MyPlayer->img = PlayersImg;
-
     }
 
     if (gb.buttons.pressed(BUTTON_A)) {
         MyPlayer->PoseBombe();
     }
     if (gb.buttons.pressed(BUTTON_B)) {
-        // General::Pause = true;
-        // gb.begin(); // marche pas
-
-        gb.bootloader.loader();
     }
 
 }
