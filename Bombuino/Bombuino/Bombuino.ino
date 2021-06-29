@@ -33,13 +33,19 @@ void loop() {
     while (!gb.update());
     TouchEvent();
     gb.display.clear();
-    if (General::Pause) {
-        gb.display.print(General::generalTexte);
-        gb.display.print(General::generalInt);
-        gb.display.print(".");
-        gb.display.print(General::generalInt2);
-        return;
-    }
+
+    gb.display.print(General::generalTexte);
+
+
+    //if (General::Pause) {
+    //    /*gb.display.print(General::generalTexte);
+    //    gb.display.print(General::generalInt);
+    //    gb.display.print(".");
+    //    gb.display.print(General::generalInt2);
+    //    return;*/
+    //}
+
+
     General::DrawBombe();
     //General::DrawCadre();
     General::DrawEntities();
@@ -88,7 +94,10 @@ void TouchEvent() {
         MyPlayer->PoseBombe();
     }    
     if (gb.buttons.pressed(BUTTON_B)) {
-        General::Pause = false;
+        // General::Pause = true;
+        // gb.begin(); // marche pas
+
+        gb.bootloader.loader();
     }
 
 }
