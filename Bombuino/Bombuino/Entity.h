@@ -9,31 +9,45 @@
 	#include "WProgram.h"
 #endif
 
+enum TypeEntity {
+	briques =0,
+	bombes=1,
+	players=2,
+	briquesDestructible=3,
+	Ia=4,
+	none=5,
+	emptyCase=6
+};
+
 class Entity {
 	protected:
 	int _x;
 	int _y;
 	int _width;
 	int _height;
+	TypeEntity _typeEntity;
 
 	public:
-	virtual void update();
 
-	const int& getX() const;
+		virtual void update();
 
-	void setX(const int& x);
+		const int& getX() const;
 
-	const int& getY() const;
+		void setX(const int& x);
 
-	void setY(const int& y);
+		const int& getY() const;
 
-	const int& getWidth() const;
+		void setY(const int& y);
 
-	void setWidth(const int& width);
+		const int& getWidth() const;
 
-	const int& getHeight();
+		void setWidth(const int& width);
 
-	void setHeight(const int& height);
+		const int& getHeight();
+
+		void setHeight(const int& height);
+
+		const TypeEntity& getTypeEntity();
 };
 
 #endif

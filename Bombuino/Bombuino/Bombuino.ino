@@ -4,38 +4,91 @@
  Author:	Viviane NGUYEN - Moussa FOFANA - Fabrice FERRERE
 */
 
+#include "General.h"
 #include "Entity.h"
+#include "Players.h"
+#include "Utils.h"
+#include "Brique.h"
+#include "Bombe.h"
 #include <Gamebuino-Meta.h>
 #include <cstdlib>
 
+
+Image PlayersImg(Utils::ROBOT_TEXTURE);
+
 void setup() {
-	gb.begin();
+
+    gb.begin();
+    General::InstanceBreakeableBrique();
+    General::InstanceUnbreakBrique();
+    General::PlayersArrays[General::CompteurPlayers++] = new Players(General::MyPlayerStartPositionX, General::MyPlayerStartPositionY, TypeEntity::players, General::CompteurPlayers, PlayersImg);
+    
+    /*PNJ*/
+    General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 8,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, BLUE);
+    //General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, RED);
+
 }
 
-// pour rappel l'écran actuel fait 79/63
-int largeur = 77;
-int hauteur = 63;
-
-// Initialisation 
-int i = 0;
-int position_x = 1; // pour centrer le quadrillage, on le décalle de 1
-int position_y = 7; // Prise en compte de la première ligne
-
-
-// the loop function runs over and over again until power down or reset
 void loop() {
-  
-	while (!gb.update());
-	gb.display.clear();
+    while (!gb.update());
+    TouchEvent();
+    gb.display.clear();
+    if (General::Pause) {
+        gb.display.print(General::generalTexte);
+        gb.display.print(General::generalInt);
+        gb.display.print(".");
+        gb.display.print(General::generalInt2);
+        return;
+    }
+    General::DrawBombe();
+    //General::DrawCadre();
+    General::DrawEntities();
 
-	//////////////////////////ZONE QUADRILLAGE
-	affiche_Map(largeur, hauteur);
+    for (Entity* ent : General::PlayersArrays)
+    {
+        if (ent == nullptr)
+        {
+            continue;
+        }
+
+        Players* joueur =(Players*) ent;
+        joueur->update();
+    }
+
 }
 
-void affiche_Map(int largeur, int hauteur) {
-	for (position_y = 7; position_y < hauteur; position_y += 8) {
-		for (position_x = 1; position_x < largeur; position_x += 7) {
-			gb.display.drawRect(position_x, position_y, 7, 8);
-		}
-	}
+
+/// <summary>
+/// Capte les touches de notre joueur
+/// </summary>
+void TouchEvent() {
+    Players* MyPlayer = (Players*) General::PlayersArrays[0];
+
+    if (gb.buttons.pressed(BUTTON_UP)) {
+        MyPlayer->Move(positionMove::UP);
+        //PlayersImg.setFrame(2);
+    }
+
+    if (gb.buttons.pressed(BUTTON_DOWN)) {
+        MyPlayer->Move(positionMove::DOWN);
+        //PlayersImg.setFrame(0);
+    }
+
+    if (gb.buttons.pressed(BUTTON_LEFT)) {
+        MyPlayer->Move(positionMove::LEFT);
+        //PlayersImg.setFrame(3);
+    }
+
+    if (gb.buttons.pressed(BUTTON_RIGHT)) {
+        MyPlayer->Move(positionMove::RIGHT);
+        //PlayersImg.setFrame(1);
+    }
+
+    if (gb.buttons.pressed(BUTTON_A)) {
+        MyPlayer->PoseBombe();
+    }    
+    if (gb.buttons.pressed(BUTTON_B)) {
+        General::Pause = false;
+    }
+
 }

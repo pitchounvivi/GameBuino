@@ -4,6 +4,7 @@
 
 #include "Entity.h"
 
+
 const int& Entity::getX() const {
 	return _x;
 }
@@ -13,7 +14,7 @@ void Entity::setX(const int& x) {
 }
 
 const int& Entity::getY() const {
-	return _x;
+	return _y;
 }
 
 void Entity::setY(const int& y) {
@@ -34,4 +35,8 @@ const int& Entity::getHeight() {
 
 void Entity::setHeight(const int& height) {
 	_height = height;
+}
+
+const TypeEntity& Entity::getTypeEntity() {
+	return _typeEntity;
 }
