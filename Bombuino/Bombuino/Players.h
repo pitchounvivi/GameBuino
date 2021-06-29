@@ -510,8 +510,6 @@ public:
 		}
 
 		// on r?cup?re une position random ou bouge le joueur en fonction du nombree d'empty case trouv?:
-
-		gb.display.print(cptEmpty);
 		if (cptEmpty == 0) 
 		{
 			return positionMove::NONE;

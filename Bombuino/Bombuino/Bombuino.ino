@@ -39,7 +39,7 @@ void loop() {
     General::DrawBombe();
     General::DrawCadre();
     General::DrawEntities();
-
+    gb.display.print(General::generalTexte);
     for (Entity* ent : General::PlayersArrays)
     {
         if (ent == nullptr)
