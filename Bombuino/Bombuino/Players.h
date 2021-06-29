@@ -36,19 +36,19 @@ public:
 	int BombePosingNumber = 0;
 	int IndexPlayers;
 	Color colorPlayers;
-	Image img;
+	Image &img;
 	Bombe* bombeArray[PlayersMaxBombe] = { nullptr };
 	int TimerToMove = Utils::RandomTimePnjAction();
 	positionMove posArrayToMoveInSecurity[2];
 
-	Players(int x, int y, TypeEntity typeEntity, int indexPlayers, Image image, const Color colorIA = WHITE) {
+	Players(int x, int y, TypeEntity typeEntity, int indexPlayers, Image &image, const Color colorIA = WHITE) :img(image)
+	{
 		_x = x;
 		_y = y;
 		_width = WIDTH;
 		_height = HEIGHT;
 		IndexPlayers = indexPlayers;
 		_typeEntity = typeEntity;
-		img = image;
 		if (typeEntity == TypeEntity::Ia)
 		{
 			colorPlayers = colorIA;
@@ -77,21 +77,25 @@ public:
 		{
 		case positionMove::DOWN:
 			if (PlayersCanMove(DOWN)) {
+				img.setFrame(0);
 				_y += DOWN;
 			}
 			break;
 		case positionMove::LEFT:
 			if (PlayersCanMove(LEFT)) {
+				img.setFrame(2);
 				_x += LEFT;
 			}
 			break;
 		case positionMove::RIGHT:
 			if (PlayersCanMove(RIGHT)) {
+				img.setFrame(3);
 				_x += RIGHT;
 			}
 			break;
 		case positionMove::UP:
 			if (PlayersCanMove(UP)) {
+				img.setFrame(1);
 				_y += UP;
 			}
 			break;
@@ -108,14 +112,15 @@ public:
 
 		if (getTypeEntity() == TypeEntity::Ia)
 		{
-			gb.display.setColor(colorPlayers);
-			gb.display.fillCircle(_x+3, _y+3, 2);
+			gb.display.drawImage(_x+1, _y-2, img);
+			//gb.display.setColor(colorPlayers);
+			//gb.display.fillCircle(_x+3, _y+3, 2);
 			TimerToMove--;
 			DeplacementPnj();
 		}
 		else
 		{
-			gb.display.drawImage(_x, _y+1, img);
+			gb.display.drawImage(_x, _y-2, img);
 		}
 
 		int cpt = 0;
@@ -395,10 +400,6 @@ public:
 			}
 			else {
 				PoseBombe();
-				General::generalTexte = "pOSE BOMBE Y:";
-				General::generalInt = posArrayToMoveInSecurity[0];
-				General::generalInt2 = posArrayToMoveInSecurity[1];
-				General::Pause = true;
 				Move(posArrayToMoveInSecurity[0]);
 				Move(posArrayToMoveInSecurity[1]);
 				return true;

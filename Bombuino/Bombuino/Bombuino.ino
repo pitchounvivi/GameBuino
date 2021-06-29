@@ -13,8 +13,10 @@
 #include <Gamebuino-Meta.h>
 #include <cstdlib>
 
-
 Image PlayersImg(Utils::ROBOT_TEXTURE);
+Image IaOneImg(Utils::ALIEN_TEXTURE);
+Image IaTwoImg(Utils::WOMAN_TEXTURE);
+Image IaThreeImg(Utils::DOG_TEXTURE);
 
 void setup() {
 
@@ -22,26 +24,27 @@ void setup() {
     General::InstanceBreakeableBrique();
     General::InstanceUnbreakBrique();
     General::PlayersArrays[General::CompteurPlayers++] = new Players(General::MyPlayerStartPositionX, General::MyPlayerStartPositionY, TypeEntity::players, General::CompteurPlayers, PlayersImg);
-    
+
     /*PNJ*/
-    General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 8,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, BLUE);
-    //General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, RED);
+    General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 8, TypeEntity::Ia, General::CompteurPlayers, IaOneImg, BLUE);
+    General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, IaTwoImg, RED);
+    General::PlayersArrays[General::CompteurPlayers++] = new Players(1, 56,TypeEntity::Ia, General::CompteurPlayers, IaThreeImg, RED);
 
 }
 
 void loop() {
     while (!gb.update());
-    TouchEvent();
     gb.display.clear();
-    if (General::Pause) {
-        gb.display.print(General::generalTexte);
-        gb.display.print(General::generalInt);
-        gb.display.print(".");
-        gb.display.print(General::generalInt2);
-        return;
-    }
+    //if (General::Pause) {
+    //    gb.display.print(General::generalTexte);
+    //    gb.display.print(General::generalInt);
+    //    gb.display.print(".");
+    //    gb.display.print(General::generalInt2);
+    //    return;
+    //}
+    TouchEvent();
     General::DrawBombe();
-    //General::DrawCadre();
+    General::DrawCadre();
     General::DrawEntities();
 
     for (Entity* ent : General::PlayersArrays)
@@ -51,7 +54,7 @@ void loop() {
             continue;
         }
 
-        Players* joueur =(Players*) ent;
+        Players* joueur = (Players*)ent;
         joueur->update();
     }
 
@@ -62,31 +65,38 @@ void loop() {
 /// Capte les touches de notre joueur
 /// </summary>
 void TouchEvent() {
-    Players* MyPlayer = (Players*) General::PlayersArrays[0];
+    Players* MyPlayer = (Players*)General::PlayersArrays[0];
 
     if (gb.buttons.pressed(BUTTON_UP)) {
+        //PlayersImg.setFrame(1);
         MyPlayer->Move(positionMove::UP);
-        //PlayersImg.setFrame(2);
+        //MyPlayer->img = PlayersImg;
     }
 
     if (gb.buttons.pressed(BUTTON_DOWN)) {
+        PlayersImg.setFrame(0);
         MyPlayer->Move(positionMove::DOWN);
-        //PlayersImg.setFrame(0);
+        MyPlayer->img = PlayersImg;
+
     }
 
     if (gb.buttons.pressed(BUTTON_LEFT)) {
+        //PlayersImg.setFrame(2);
         MyPlayer->Move(positionMove::LEFT);
-        //PlayersImg.setFrame(3);
+        //MyPlayer->img = PlayersImg;
+
     }
 
     if (gb.buttons.pressed(BUTTON_RIGHT)) {
+        //PlayersImg.setFrame(3);
         MyPlayer->Move(positionMove::RIGHT);
-        //PlayersImg.setFrame(1);
+        //MyPlayer->img = PlayersImg;
+
     }
 
     if (gb.buttons.pressed(BUTTON_A)) {
         MyPlayer->PoseBombe();
-    }    
+    }
     if (gb.buttons.pressed(BUTTON_B)) {
         General::Pause = false;
     }
