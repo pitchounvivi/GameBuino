@@ -10,14 +10,16 @@
 #include "Node.h"
 #include "List.h"
 
+
 // no circular dependency just metionning a players class
-class Players;
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
 #else
 	#include "WProgram.h"
 #endif
+
+class Players;
 class General
 {
 	public:
@@ -30,7 +32,6 @@ class General
 		static const int POSITION_START_DRAW_X;
 		static const int POSITION_END_DRAW_X;
 		static const int BOMBE_TIMER;
-		static int CompteurPlayers;
 		static const int ScreenWidth;
 		static const int ScreenHeight;
 		static char* generalTexte;

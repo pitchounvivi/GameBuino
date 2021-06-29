@@ -35,7 +35,7 @@ int Utils::RandomInt() {
 /// Entre 0.75s et 2s
 /// </summary>
 /// <returns></returns>
-int Utils::RandomTimePnjAction(){
+int Utils::randomTimerNextAction(){
     return rand() % 20 + 20; // si 0 +30 = 30 soit 0.75s de temps de réation / si 50 +30 = 80 soit 2s de temps de réaction
 }
 

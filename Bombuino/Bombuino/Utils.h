@@ -23,7 +23,7 @@ class Utils
 		const static uint16_t BRIQUE_DESTRUCTIBLE[];
 
 		static int RandomInt();
-		static int RandomTimePnjAction();
+		static int randomTimerNextAction();
 
 	private:
 		Utils() {}

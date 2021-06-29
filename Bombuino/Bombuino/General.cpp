@@ -1,10 +1,11 @@
-// 
+ï»¿// 
 // 
 // 
 
 #include "General.h"
 #include "Brique.h"
 #include "Players.h"
+#include "Bombe.h"
 
 const int General::FPS = 40;
 
@@ -12,16 +13,15 @@ const int General::MY_PLAYER_START_POSITION_X = 2;
 const int General::MY_PLAYER_START_POSITION_Y = 7;
 const int General::HEIGHT_CADRE_SCORE = 7;
 const int General::POSITION_ZERO = 0;
-const int General::POSITION_START_DRAW_X = 1; // on ne dessine pas de 0 , mais de 1 (sauf pour le cadre) car nos calcul nous amène à 77 donc on esdpacez de 1px de chaqué coté. 
+const int General::POSITION_START_DRAW_X = 1; // on ne dessine pas de 0 , mais de 1 (sauf pour le cadre) car nos calcul nous amÃ¨ne Ã  77 donc on esdpacez de 1px de chaquÃ© cotÃ©. 
 const int General::POSITION_END_DRAW_X = 77;
-int General::CompteurPlayers = 0;
 
 char* General::generalTexte = "";
 char* General::generalTexte2 = "";
 int General::generalInt = 0;
 int General::generalInt2 = 0;
 
-/*" Surcharge de la taille de l'écran car on a travailler sur l'écran de 79x63... Rendu compte trop tard"*/
+/* Surcharge de la taille de l'Ã©cran car on a travailler sur l'Ã©cran de 79x63... Rendu compte trop tard ðŸ˜…*/
 const int General::ScreenWidth = 79;
 const int General::ScreenHeight = 63;
 
@@ -32,8 +32,6 @@ const static int NB_PLAYER = 3;
 List<Entity> General::entities = List<Entity>();
 
 List<Players> General::players = List<Players>();
-
-//Entity* General::PlayersArrays[NB_PLAYER] = { nullptr };
 
 bool General::Pause = false;
 
@@ -54,7 +52,7 @@ void General::InstanceUnbreakBrique() {
 }
 
 /// <summary>
-/// Instancie les bloc destructible et gère l'espace nécessaire au départ pour les joueurs
+/// Instancie les bloc destructible et gÃ¨re l'espace nÃ©cessaire au dÃ©part pour les joueurs
 /// </summary>
 void General::InstanceBreakeableBrique() {
 
@@ -86,7 +84,7 @@ void General::InstanceBreakeableBrique() {
 }
 
 /// <summary>
-/// Dessine le cadre du score et autour de l'arène
+/// Dessine le cadre du score et autour de l'arÃ¨ne
 /// </summary>
 void General::DrawCadre() {
     gb.display.setColor(GRAY);
@@ -98,12 +96,12 @@ void General::DrawCadre() {
 
 /// <summary>
 /// Dessine les bombes !
-/// les bombes doivent être dessinés en premier comme ça elles sont en arriere plan ( passe derriere les murs)
+/// les bombes doivent Ãªtre dessinÃ©s en premier comme Ã§a elles sont en arriere plan ( passe derriere les murs)
 /// </summary>
 void General::DrawBombe() {
     const Node<Entity> *iterator = General::entities.get_head();
     while (iterator) {
-        if (iterator->_current->getTypeEntity() == TypeEntity::bombes)
+        if (iterator->_current->getTypeEntity() == TypeEntity::BOMBES)
         {
             iterator->_current->update();
         }
@@ -117,8 +115,8 @@ void General::DrawBombe() {
 void General::DrawEntities() {
     const Node<Entity>* iterator = General::entities.get_head();
     while (iterator) {
-        // ne dessine pas les bombes car on les a dessiné avant
-        if (iterator->_current->getTypeEntity() != TypeEntity::bombes)
+        // ne dessine pas les bombes car on les a dessinÃ© avant
+        if (iterator->_current->getTypeEntity() != TypeEntity::BOMBES)
         {
             iterator->_current->update();
         }

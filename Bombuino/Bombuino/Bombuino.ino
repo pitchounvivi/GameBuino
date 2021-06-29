@@ -18,21 +18,17 @@
 Image PlayersImg(Utils::ROBOT_TEXTURE);
 
 void setup() {
-
     gb.begin();
     General::InstanceBreakeableBrique();
     General::InstanceUnbreakBrique();
-    General::players.push(new Players(General::MY_PLAYER_START_POSITION_X, General::MY_PLAYER_START_POSITION_Y, TypeEntity::players, General::CompteurPlayers, PlayersImg));
+    General::players.push(new Players(General::MY_PLAYER_START_POSITION_X, General::MY_PLAYER_START_POSITION_Y, TypeEntity::PLAYER, PlayersImg));
     
-    /*PNJ*/
-    General::players.push(new Players(71, 8,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, BLUE));
-    //General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, RED);
-
+    /*IA's*/
+    General::players.push(new Players(71, 8, TypeEntity::IA, PlayersImg, BLUE));
 }
 
 void loop() {
     while (!gb.update());
-    TouchEvent();
     gb.display.clear();
     if (General::Pause) {
         gb.display.print(General::generalTexte);
@@ -49,41 +45,4 @@ void loop() {
         iteratorP->_current->update();
         iteratorP = iteratorP->_next;
     }
-
-}
-
-
-/// <summary>
-/// Capte les touches de notre joueur
-/// </summary>
-void TouchEvent() {
-    Players* MyPlayer = (Players*) General::players.find(0);
-
-    if (gb.buttons.pressed(BUTTON_UP)) {
-        MyPlayer->Move(MOVES::UP);
-        //PlayersImg.setFrame(2);
-    }
-
-    if (gb.buttons.pressed(BUTTON_DOWN)) {
-        MyPlayer->Move(MOVES::DOWN);
-        //PlayersImg.setFrame(0);
-    }
-
-    if (gb.buttons.pressed(BUTTON_LEFT)) {
-        MyPlayer->Move(MOVES::LEFT);
-        //PlayersImg.setFrame(3);
-    }
-
-    if (gb.buttons.pressed(BUTTON_RIGHT)) {
-        MyPlayer->Move(MOVES::RIGHT);
-        //PlayersImg.setFrame(1);
-    }
-
-    if (gb.buttons.pressed(BUTTON_A)) {
-        MyPlayer->PoseBombe();
-    }    
-    if (gb.buttons.pressed(BUTTON_B)) {
-        General::Pause = false;
-    }
-
 }

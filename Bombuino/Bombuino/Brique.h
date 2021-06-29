@@ -24,16 +24,16 @@ public:
         _width = WIDTH;
         _height = HEIGHT;
         if (isbreakble) {
-            _typeEntity = TypeEntity::briquesDestructible;
+            _typeEntity = TypeEntity::BRIQUES_BREAK;
         }
         else {
-            _typeEntity = TypeEntity::briques;
+            _typeEntity = TypeEntity::BRIQUES;
         }
 
     }
 
     void update() {
-        if (getTypeEntity() == TypeEntity::briquesDestructible) {
+        if (getTypeEntity() == TypeEntity::BRIQUES_BREAK) {
             gb.display.drawImage(_x, _y, Utils::BRIQUE_DESTRUCTIBLE);
         }
         else {

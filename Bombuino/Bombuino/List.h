@@ -19,7 +19,7 @@ private:
 		if (node->_prev == nullptr && node->_next == nullptr) {
 			_head = nullptr;
 			_tail = nullptr;
-			delete node;
+			//delete node;
 			_size -= 1;
 			return;
 		}
@@ -28,7 +28,7 @@ private:
 		if (node->_prev != nullptr && node->_next == nullptr) {
 			_tail = node->_prev;
 			_tail->_next = nullptr;
-			delete node;
+			//delete node;
 			_size -= 1;
 			return;
 		}
@@ -36,7 +36,7 @@ private:
 		if (node->_prev == nullptr && node->_next != nullptr) {
 			_head = node->_next;
 			_head->_prev = nullptr;
-			delete node;
+			//delete node;
 			_size -= 1;
 			return;
 		}
@@ -44,7 +44,7 @@ private:
 		// base case
 		node->_prev->_next = node->_next;
 		node->_next->_prev = node->_prev;
-		delete node;
+		//delete node;
 		_size -= 1;
 	}
 public:
@@ -104,7 +104,7 @@ public:
 		}*/
 
 		// free memory
-		delete _tail;
+		//delete _tail;
 
 		_tail = tmp;
 

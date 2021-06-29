@@ -10,13 +10,12 @@
 #endif
 
 enum TypeEntity {
-	briques =0,
-	bombes=1,
-	players=2,
-	briquesDestructible=3,
-	Ia=4,
-	none=5,
-	emptyCase=6
+	BRIQUES = 0,
+	BOMBES = 1,
+	PLAYER = 2,
+	BRIQUES_BREAK = 3,
+	IA = 4,
+	EMPTY = 6
 };
 
 class Entity {
