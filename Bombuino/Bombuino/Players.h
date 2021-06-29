@@ -152,7 +152,7 @@ public:
 
 		if (moveTO == positionMove::LEFT || moveTO == positionMove::RIGHT)
 		{
-			// si on sort de l'écran
+			// si on sort de l'?cran
 			if (this->getX() + moveTO <= 0 || this->getX() + moveTO >= 77) {
 				return false;
 			}
@@ -238,17 +238,17 @@ public:
 				continue;
 			}
 
-			// si j'ai rien rencontrer dans le périmètre
+			// si j'ai rien rencontrer dans le p?rim?tre
 			posArrayToMoveInSecurity[0] = pos;
 			lastPos = GetLastPos(posArrayToMoveInSecurity[0]);
 
-			// je regarde dans le périmètre de la futur position :
+			// je regarde dans le p?rim?tre de la futur position :
 			for (positionMove posPlus : positionArray)
 			{
 				int NewPosXPlus;
 				int NewPosYPlus;
 
-				// je ne prends pas en compte la position d'où je viens:
+				// je ne prends pas en compte la position d'o? je viens:
 				if (posPlus == lastPos) {
 					continue;
 				}
@@ -308,7 +308,7 @@ public:
 	}
 
 	/// <summary>
-	/// Retourne la derrnière position du joueur.
+	/// Retourne la derrni?re position du joueur.
 	/// </summary>
 	/// <param name="pos"></param>
 	/// <returns></returns>
@@ -388,7 +388,7 @@ public:
 	{
 		TypeEntity typeEntite = GetTypeEntityAround(pos);
 
-		// s'il a une brique un joueur ou une ia il pose une bombe et s'écarte
+		// s'il a une brique un joueur ou une ia il pose une bombe et s'?carte
 		if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
 			PnjCanMoveInSecurity();
 			if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
@@ -505,7 +505,7 @@ public:
 			}
 
 			// si on a uen collision avec l'ia sur la case rechercher
-			// on ne l'ajoute pas à au tableau
+			// on ne l'ajoute pas ? au tableau
 			if (hasRencontreEntityInPerimeter)
 			{
 				continue;
@@ -517,7 +517,7 @@ public:
 			}
 		}
 
-		// on récupère une position random ou bouge le joueur en fonction du nombree d'empty case trouvé:
+		// on r?cup?re une position random ou bouge le joueur en fonction du nombree d'empty case trouv?:
 
 		gb.display.print(cptEmpty);
 		if (cptEmpty == 0) 
@@ -544,7 +544,7 @@ public:
 
 		if (General::CompteurEntite >= General::maxEntite)
 		{
-			General::CompteurEntite = 100; // on efface pas les 100 premièere entite ( les briques etc...)
+			General::CompteurEntite = 100; // on efface pas les 100 premi?ere entite ( les briques etc...)
 		}
 
 	}

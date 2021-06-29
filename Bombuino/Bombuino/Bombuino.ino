@@ -34,7 +34,6 @@ void setup() {
 
 void loop() {
     while (!gb.update());
-    gb.display.clear();
     //if (General::Pause) {
     //    gb.display.print(General::generalTexte);
     //    gb.display.print(General::generalInt);
@@ -98,7 +97,10 @@ void TouchEvent() {
         MyPlayer->PoseBombe();
     }
     if (gb.buttons.pressed(BUTTON_B)) {
-        General::Pause = false;
+        // General::Pause = true;
+        // gb.begin(); // marche pas
+
+        gb.bootloader.loader();
     }
 
 }
