@@ -17,6 +17,7 @@
 Image PlayersImg(Utils::ROBOT_TEXTURE);
 
 void setup() {
+
     gb.begin();
     General::InstanceBreakeableBrique();
     General::InstanceUnbreakBrique();
@@ -89,4 +90,5 @@ void TouchEvent() {
     if (gb.buttons.pressed(BUTTON_B)) {
         General::Pause = false;
     }
+
 }
