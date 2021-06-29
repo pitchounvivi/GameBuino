@@ -30,11 +30,18 @@ void setup() {
 
 void loop() {
     while (!gb.update());
+    TouchEvent();
     gb.display.clear();
+    if (General::Pause) {
+        gb.display.print(General::generalTexte);
+        gb.display.print(General::generalInt);
+        gb.display.print(".");
+        gb.display.print(General::generalInt2);
+        return;
+    }
     General::DrawBombe();
     //General::DrawCadre();
     General::DrawEntities();
-    TouchEvent();
 
     for (Entity* ent : General::PlayersArrays)
     {
@@ -78,5 +85,8 @@ void TouchEvent() {
 
     if (gb.buttons.pressed(BUTTON_A)) {
         MyPlayer->PoseBombe();
+    }    
+    if (gb.buttons.pressed(BUTTON_B)) {
+        General::Pause = false;
     }
 }

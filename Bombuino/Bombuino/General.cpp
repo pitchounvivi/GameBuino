@@ -24,6 +24,8 @@ int General::RightMove = 7;
 
 char* General::generalTexte = "";
 char* General::generalTexte2 = "";
+int General::generalInt = 0;
+int General::generalInt2 = 0;
 
 /*" Surcharge de la taille de l'écran car on a travailler sur l'écran de 79x63... Rendu compte trop tard"*/
 int General::ScreenWidth = 79;
@@ -36,6 +38,7 @@ const static int NbPlayer = 3;
 Entity* General::EntityArray[300] = { nullptr };
 Entity* General::PlayersArrays[3] = { nullptr };
 
+bool General::Pause = false;
 
 
 /// <summary>

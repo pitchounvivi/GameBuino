@@ -101,16 +101,15 @@ public:
 
 	void update() {
 
-		gb.display.print(this->IndexPlayers);
-		gb.display.print(".");
-		gb.display.print(this->BombePosingNumber);
-		gb.display.print("-");
+		//gb.display.print(this->IndexPlayers);
+		//gb.display.print(".");
+		//gb.display.print(this->BombePosingNumber);
+		//gb.display.print("-");
 
 		if (getTypeEntity() == TypeEntity::Ia)
 		{
 			gb.display.setColor(colorPlayers);
 			gb.display.fillCircle(_x+3, _y+3, 2);
-			DebugPnj();
 			TimerToMove--;
 			DeplacementPnj();
 		}
@@ -140,12 +139,6 @@ public:
 			}
 			cpt++;
 		}
-
-	}
-	/// <summary>
-	/// Affiche un cercle sur la cible du joueur qui le prends en chasse
-	/// </summary>
-	void DebugPnj() {
 
 	}
 
@@ -187,7 +180,7 @@ public:
 		return tmp;
 	}
 
-	positionMove *PnjCanMoveInSecurity()
+	void PnjCanMoveInSecurity()
 	{
 
 		positionMove positionArray[4] = { UP,DOWN,LEFT,RIGHT };
@@ -197,8 +190,6 @@ public:
 
 		for (positionMove pos : positionArray)
 		{
-			posOne = NONE;
-			posTwo = NONE;
 			lastPos = NONE;
 			int NewPosX;
 			int NewPosY;
@@ -244,25 +235,40 @@ public:
 
 			// si j'ai rien rencontrer dans le périmètre
 			posArrayToMoveInSecurity[0] = pos;
-			lastPos = GetLastPos(posOne);
+			lastPos = GetLastPos(posArrayToMoveInSecurity[0]);
 
 			// je regarde dans le périmètre de la futur position :
 			for (positionMove posPlus : positionArray)
 			{
+				int NewPosXPlus;
+				int NewPosYPlus;
+
 				// je ne prends pas en compte la position d'où je viens:
 				if (posPlus == lastPos) {
 					continue;
 				}
-				int NewPosXPlus;
-				int NewPosYPlus;
+
+
+
 				if (posPlus == UP || posPlus == DOWN) {
 					NewPosYPlus = NewPosY + posPlus;
 					NewPosXPlus = NewPosX;
+
+					if (NewPosYPlus< General::HeightCadreScore || NewPosYPlus> General::ScreenHeight)
+					{
+						continue;
+					}
 				}
+
 				else {
 					NewPosYPlus = NewPosY;
 					NewPosXPlus = NewPosX + posPlus;
+					if (NewPosXPlus< General::PositionStartDrawX || NewPosXPlus> General::PositionEndDrawX)
+					{
+						continue;
+					}
 				}
+
 				// si la position du joueur + ou - X entre en collision avec une entity 
 				for (Entity* entity : General::EntityArray) {
 
@@ -275,6 +281,10 @@ public:
 				for (Entity* player : General::PlayersArrays)
 				{
 					if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), NewPosXPlus, NewPosYPlus, this->getWidth(), this->getHeight())) {
+						if (player == this) 
+						{
+							continue;
+						}
 						hasRencontreEntityInPerimeter = true;
 					}
 
@@ -285,12 +295,6 @@ public:
 					continue;
 				}
 				posArrayToMoveInSecurity[1] = posPlus;
-				posTwo = posPlus;
-				if (posOne != positionMove::NONE && posTwo != positionMove::NONE)
-				{
-					positionMove tmp[2] = { posOne ,posTwo };
-					return tmp;
-				}
 			}
 
 		}
@@ -384,14 +388,19 @@ public:
 			PnjCanMoveInSecurity();
 			if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
 			{
+				//General::generalTexte = "ACTION none:";
+				//General::generalInt = posArrayToMoveInSecurity[0];
+				//General::generalInt2 = posArrayToMoveInSecurity[1];
+				//General::Pause = true;
 			}
 			else {
 				PoseBombe();
+				General::generalTexte = "pOSE BOMBE Y:";
+				General::generalInt = posArrayToMoveInSecurity[0];
+				General::generalInt2 = posArrayToMoveInSecurity[1];
+				General::Pause = true;
 				Move(posArrayToMoveInSecurity[0]);
-				gb.display.print("====>");
-				gb.display.print(posArrayToMoveInSecurity[0]);
 				Move(posArrayToMoveInSecurity[1]);
-				gb.display.print(posArrayToMoveInSecurity[1]);
 				return true;
 			}
 		}
