@@ -7,6 +7,11 @@
 
 
 #include "Entity.h"
+#include "Node.h"
+#include "List.h"
+
+// no circular dependency just metionning a players class
+class Players;
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
@@ -18,29 +23,24 @@ class General
 	public:
 		static const int FPS;
 
-		static int MyPlayerStartPositionX;
-		static int MyPlayerStartPositionY;
-		static int HeightCadreScore;
-		static int PositionZero;
-		static int PositionStartDrawX ;
-		static int PositionEndDrawX ;
-		static int BombeTimer;
-		static int CompteurEntite;
+		static const int MY_PLAYER_START_POSITION_X;
+		static const int MY_PLAYER_START_POSITION_Y;
+		static const int HEIGHT_CADRE_SCORE;
+		static const int POSITION_ZERO;
+		static const int POSITION_START_DRAW_X;
+		static const int POSITION_END_DRAW_X;
+		static const int BOMBE_TIMER;
 		static int CompteurPlayers;
-		static int ScreenWidth;
-		static int ScreenHeight;
-		static int UpMove;
-		static int DownMove;
-		static int LeftMove;
-		static int RightMove;
+		static const int ScreenWidth;
+		static const int ScreenHeight;
 		static char* generalTexte;
 		static char* generalTexte2;		
 		static int generalInt;
 		static int generalInt2;
-		const static int maxEntite = 300;
-		static Entity* EntityArray[maxEntite];
-		const static int NbPlayer = 3;
-		static Entity* PlayersArrays[3];
+		static List<Entity> entities;
+		static List<Players> players;
+		const static int NB_PLAYER = 3;
+		//static Entity* PlayersArrays[3];
 		static void InstanceUnbreakBrique();
 		static void InstanceBreakeableBrique();
 		static void DrawCadre();

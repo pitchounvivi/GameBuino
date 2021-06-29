@@ -8,19 +8,13 @@
 
 const int General::FPS = 40;
 
-int General::MyPlayerStartPositionX = 2;
-int General::MyPlayerStartPositionY = 7;
-int General::HeightCadreScore = 7;
-int General::PositionZero = 0;
-int General::PositionStartDrawX = 1; // on ne dessine pas de 0 , mais de 1 (sauf pour le cadre) car nos calcul nous amène à 77 donc on esdpacez de 1px de chaqué coté. 
-int General::PositionEndDrawX = 77;
-int General::CompteurEntite = 0;
+const int General::MY_PLAYER_START_POSITION_X = 2;
+const int General::MY_PLAYER_START_POSITION_Y = 7;
+const int General::HEIGHT_CADRE_SCORE = 7;
+const int General::POSITION_ZERO = 0;
+const int General::POSITION_START_DRAW_X = 1; // on ne dessine pas de 0 , mais de 1 (sauf pour le cadre) car nos calcul nous amène à 77 donc on esdpacez de 1px de chaqué coté. 
+const int General::POSITION_END_DRAW_X = 77;
 int General::CompteurPlayers = 0;
-
-int General::UpMove = -8;
-int General::DownMove = 8;
-int General::LeftMove = -7;
-int General::RightMove = 7; 
 
 char* General::generalTexte = "";
 char* General::generalTexte2 = "";
@@ -28,15 +22,18 @@ int General::generalInt = 0;
 int General::generalInt2 = 0;
 
 /*" Surcharge de la taille de l'écran car on a travailler sur l'écran de 79x63... Rendu compte trop tard"*/
-int General::ScreenWidth = 79;
-int General::ScreenHeight = 63;
+const int General::ScreenWidth = 79;
+const int General::ScreenHeight = 63;
 
 // Bombe dure 2s
-int General::BombeTimer= General::FPS*2; 
-const static int NbPlayer = 3;
+const int General::BOMBE_TIMER= General::FPS*2; 
+const static int NB_PLAYER = 3;
 
-Entity* General::EntityArray[300] = { nullptr };
-Entity* General::PlayersArrays[3] = { nullptr };
+List<Entity> General::entities = List<Entity>();
+
+List<Players> General::players = List<Players>();
+
+//Entity* General::PlayersArrays[NB_PLAYER] = { nullptr };
 
 bool General::Pause = false;
 
@@ -48,9 +45,10 @@ void General::InstanceUnbreakBrique() {
     int EcartBriqueX = Brique::WIDTH * 2;
     int EcartBriqueY = Brique::HEIGHT * 2;
 
-    for (int y = General::HeightCadreScore + Brique::HEIGHT; y < ScreenHeight; y += EcartBriqueY) {
-        for (int x = Brique::WIDTH + General::PositionStartDrawX; x < General::PositionEndDrawX; x += EcartBriqueX) {
-            General::EntityArray[CompteurEntite++] = new Brique(x, y);
+    for (int y = General::HEIGHT_CADRE_SCORE + Brique::HEIGHT; y < ScreenHeight; y += EcartBriqueY) {
+        for (int x = Brique::WIDTH + General::POSITION_START_DRAW_X; x < General::POSITION_END_DRAW_X; x += EcartBriqueX) {
+            General::entities.push(new Brique(x, y));
+            //General::EntityArray[CompteurEntite++] = ;
         }
     }
 }
@@ -60,9 +58,9 @@ void General::InstanceUnbreakBrique() {
 /// </summary>
 void General::InstanceBreakeableBrique() {
 
-    for (int y = General::HeightCadreScore; y < General::ScreenHeight; y += Brique::HEIGHT)
+    for (int y = General::HEIGHT_CADRE_SCORE; y < General::ScreenHeight; y += Brique::HEIGHT)
     {
-        for (int x = General::PositionStartDrawX; x <= General::PositionEndDrawX; x += Brique::WIDTH) {
+        for (int x = General::POSITION_START_DRAW_X; x <= General::POSITION_END_DRAW_X; x += Brique::WIDTH) {
 
             if (
                 (x == 1 && y == 7) ||
@@ -81,7 +79,8 @@ void General::InstanceBreakeableBrique() {
             {
                 continue;
             }
-            General::EntityArray[General::CompteurEntite++] = new Brique(x, y, true);
+            General::entities.push(new Brique(x, y, true));
+            //General::EntityArray[General::CompteurEntite++] = new Brique(x, y, true);
         }
     }
 }
@@ -91,10 +90,10 @@ void General::InstanceBreakeableBrique() {
 /// </summary>
 void General::DrawCadre() {
     gb.display.setColor(GRAY);
-    gb.display.fillRect(General::PositionZero, General::PositionZero, gb.display.width(), General::HeightCadreScore);
-    gb.display.drawFastVLine(General::PositionZero, General::PositionZero, gb.display.height());
-    gb.display.drawFastVLine(General::ScreenWidth, General::PositionZero, gb.display.height());
-    gb.display.drawFastHLine(General::PositionZero, General::ScreenHeight, gb.display.width());
+    gb.display.fillRect(General::POSITION_ZERO, General::POSITION_ZERO, gb.display.width(), General::HEIGHT_CADRE_SCORE);
+    gb.display.drawFastVLine(General::POSITION_ZERO, General::POSITION_ZERO, gb.display.height());
+    gb.display.drawFastVLine(General::ScreenWidth, General::POSITION_ZERO, gb.display.height());
+    gb.display.drawFastHLine(General::POSITION_ZERO, General::ScreenHeight, gb.display.width());
 }
 
 /// <summary>
@@ -102,14 +101,13 @@ void General::DrawCadre() {
 /// les bombes doivent être dessinés en premier comme ça elles sont en arriere plan ( passe derriere les murs)
 /// </summary>
 void General::DrawBombe() {
-    for (Entity* entity : General::EntityArray) {
-        if (entity == nullptr) {
-            continue;
-        }
-        if (entity->getTypeEntity() == TypeEntity::bombes)
+    const Node<Entity> *iterator = General::entities.get_head();
+    while (iterator) {
+        if (iterator->_current->getTypeEntity() == TypeEntity::bombes)
         {
-            entity->update();
+            iterator->_current->update();
         }
+        iterator = iterator->_next;
     }
 }
 
@@ -117,14 +115,13 @@ void General::DrawBombe() {
 /// Dessine toutes les entites sauf les bombes.
 /// </summary>
 void General::DrawEntities() {
-    for (Entity* entity : General::EntityArray) {
-        if (entity == nullptr) {
-            continue;
-        }
+    const Node<Entity>* iterator = General::entities.get_head();
+    while (iterator) {
         // ne dessine pas les bombes car on les a dessiné avant
-        if (entity->getTypeEntity() != TypeEntity::bombes)
+        if (iterator->_current->getTypeEntity() != TypeEntity::bombes)
         {
-            entity->update();
+            iterator->_current->update();
         }
+        iterator = iterator->_next;
     }
 }

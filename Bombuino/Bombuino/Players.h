@@ -9,6 +9,7 @@
 #include "General.h"
 #include "Entity.h"
 #include "Bombe.h"
+#include "MOVES.h"
 
 
 #if defined(ARDUINO) && ARDUINO >= 100
@@ -16,15 +17,6 @@
 #else
 #include "WProgram.h"
 #endif
-enum positionMove
-{
-	UP = -8,
-	DOWN = 8,
-	LEFT = -7,
-	RIGHT = 7,
-	NONE = 0
-};
-
 
 class Players : public Entity {
 public:
@@ -39,7 +31,7 @@ public:
 	Image img;
 	Bombe* bombeArray[PlayersMaxBombe] = { nullptr };
 	int TimerToMove = Utils::RandomTimePnjAction();
-	positionMove posArrayToMoveInSecurity[2];
+	MOVES posArrayToMoveInSecurity[2];
 
 	Players(int x, int y, TypeEntity typeEntity, int indexPlayers, Image image, const Color colorIA = WHITE) {
 		_x = x;
@@ -72,25 +64,25 @@ public:
 		return getTypeEntity();
 	}
 
-	void Move(positionMove move) {
+	void Move(MOVES move) {
 		switch (move)
 		{
-		case positionMove::DOWN:
+		case MOVES::DOWN:
 			if (PlayersCanMove(DOWN)) {
 				_y += DOWN;
 			}
 			break;
-		case positionMove::LEFT:
+		case MOVES::LEFT:
 			if (PlayersCanMove(LEFT)) {
 				_x += LEFT;
 			}
 			break;
-		case positionMove::RIGHT:
+		case MOVES::RIGHT:
 			if (PlayersCanMove(RIGHT)) {
 				_x += RIGHT;
 			}
 			break;
-		case positionMove::UP:
+		case MOVES::UP:
 			if (PlayersCanMove(UP)) {
 				_y += UP;
 			}
@@ -142,10 +134,10 @@ public:
 
 	}
 
-	bool PlayersCanMove(positionMove moveTO) {
+	bool PlayersCanMove(MOVES moveTO) {
 		bool tmp = true;
 
-		if (moveTO == positionMove::LEFT || moveTO == positionMove::RIGHT)
+		if (moveTO == MOVES::LEFT || moveTO == MOVES::RIGHT)
 		{
 			// si on sort de l'écran
 			if (this->getX() + moveTO <= 0 || this->getX() + moveTO >= 77) {
@@ -155,11 +147,14 @@ public:
 			gb.display.setColor(YELLOW);
 
 			// si la position du joueur + ou - X entre en collision avec une entity alors il ne bouge pas
-			for (Entity* entity : General::EntityArray) {
+			const Node<Entity>* iterator = General::entities.get_head();
 
-				if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), this->getX() + moveTO, this->getY(), this->getWidth(), this->getHeight())) {
+			while (iterator) {
+
+				if (gb.collide.rectRect(iterator->_current->getX(), iterator->_current->getY(), iterator->_current->getWidth(), iterator->_current->getHeight(), this->getX() + moveTO, this->getY(), this->getWidth(), this->getHeight())) {
 					tmp = false;
 				}
+				iterator = iterator->_next;
 			}
 
 		}
@@ -170,10 +165,14 @@ public:
 			}
 
 			// si la position du joueur + ou - Y entre en collision avec une entity alors il ne bouge pas
-			for (Entity* entity : General::EntityArray) {
-				if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), this->getX(), this->getY() + moveTO, this->getWidth(), this->getHeight())) {
+			const Node<Entity>* iterator = General::entities.get_head();
+
+			while (iterator) {
+				if (gb.collide.rectRect(iterator->_current->getX(), iterator->_current->getY(), iterator->_current->getWidth(), iterator->_current->getHeight(), this->getX(), this->getY() + moveTO, this->getWidth(), this->getHeight())) {
 					tmp = false;
 				}
+				iterator = iterator->_next;
+
 			}
 		}
 
@@ -183,12 +182,12 @@ public:
 	void PnjCanMoveInSecurity()
 	{
 
-		positionMove positionArray[4] = { UP,DOWN,LEFT,RIGHT };
-		positionMove posOne = NONE;
-		positionMove posTwo = NONE;
-		positionMove lastPos = NONE;
+		MOVES positionArray[4] = { UP,DOWN,LEFT,RIGHT };
+		MOVES posOne = NONE;
+		MOVES posTwo = NONE;
+		MOVES lastPos = NONE;
 
-		for (positionMove pos : positionArray)
+		for (MOVES pos : positionArray)
 		{
 			lastPos = NONE;
 			int NewPosX;
@@ -196,7 +195,7 @@ public:
 			if (pos == UP || pos == DOWN) {
 				NewPosY = this->getY() + pos;
 				NewPosX = this->getX();
-				if (NewPosY< General::HeightCadreScore || NewPosY> General::ScreenHeight)
+				if (NewPosY< General::HEIGHT_CADRE_SCORE || NewPosY> General::ScreenHeight)
 				{
 					continue;
 				}
@@ -204,7 +203,7 @@ public:
 			else {
 				NewPosY = this->getY();
 				NewPosX = this->getX() + pos;
-				if (NewPosX< General::PositionStartDrawX || NewPosX> General::PositionEndDrawX)
+				if (NewPosX< General::POSITION_START_DRAW_X || NewPosX> General::POSITION_END_DRAW_X)
 				{
 					continue;
 				}
@@ -212,19 +211,25 @@ public:
 
 			bool hasRencontreEntityInPerimeter = false;
 
-			// si la position du joueur + ou - X entre en collision avec une entity 
-			for (Entity* entity : General::EntityArray) {
+			// si la position du joueur + ou - X entre en collision avec une entity
+			const Node<Entity>* iterator = General::entities.get_head();
 
-				if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
+			while (iterator) {
+
+				if (gb.collide.rectRect(iterator->_current->getX(), iterator->_current->getY(), iterator->_current->getWidth(), iterator->_current->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
 					// si je rencontre quelque choses
 					hasRencontreEntityInPerimeter = true;
 				}
+				iterator = iterator->_next;
 			}
+			
+			const Node<Entity>* iteratorP = (Node<Entity> *)General::players.get_head();
 
-			for (Entity* player : General::PlayersArrays) {
-				if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
+			while (iteratorP) {
+				if (gb.collide.rectRect(iteratorP->_current->getX(), iteratorP->_current->getY(), iteratorP->_current->getWidth(), iteratorP->_current->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
 					hasRencontreEntityInPerimeter = true;
 				}
+				iteratorP = iteratorP->_next;
 			}
 
 
@@ -238,7 +243,7 @@ public:
 			lastPos = GetLastPos(posArrayToMoveInSecurity[0]);
 
 			// je regarde dans le périmètre de la futur position :
-			for (positionMove posPlus : positionArray)
+			for (MOVES posPlus : positionArray)
 			{
 				int NewPosXPlus;
 				int NewPosYPlus;
@@ -254,7 +259,7 @@ public:
 					NewPosYPlus = NewPosY + posPlus;
 					NewPosXPlus = NewPosX;
 
-					if (NewPosYPlus< General::HeightCadreScore || NewPosYPlus> General::ScreenHeight)
+					if (NewPosYPlus< General::HEIGHT_CADRE_SCORE || NewPosYPlus> General::ScreenHeight)
 					{
 						continue;
 					}
@@ -263,31 +268,34 @@ public:
 				else {
 					NewPosYPlus = NewPosY;
 					NewPosXPlus = NewPosX + posPlus;
-					if (NewPosXPlus< General::PositionStartDrawX || NewPosXPlus> General::PositionEndDrawX)
+					if (NewPosXPlus< General::POSITION_START_DRAW_X || NewPosXPlus> General::POSITION_END_DRAW_X)
 					{
 						continue;
 					}
 				}
 
-				// si la position du joueur + ou - X entre en collision avec une entity 
-				for (Entity* entity : General::EntityArray) {
+				// si la position du joueur + ou - X entre en collision avec une entity
+				const Node<Entity>* iterator = General::entities.get_head();
 
-					if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), NewPosXPlus, NewPosYPlus, this->getWidth(), this->getHeight())) {
+				while (iterator) {
+
+					if (gb.collide.rectRect(iterator->_current->getX(), iterator->_current->getY(), iterator->_current->getWidth(), iterator->_current->getHeight(), NewPosXPlus, NewPosYPlus, this->getWidth(), this->getHeight())) {
 						// si je rencontre quelque choses
 						hasRencontreEntityInPerimeter = true;
 					}
+					iterator = iterator->_next;
 				}
-
-				for (Entity* player : General::PlayersArrays)
+				Node<Entity>* iteratorP = (Node<Entity>*)General::players.get_head();
+				while (iteratorP)
 				{
-					if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), NewPosXPlus, NewPosYPlus, this->getWidth(), this->getHeight())) {
-						if (player == this) 
+					if (gb.collide.rectRect(iteratorP->_current->getX(), iteratorP->_current->getY(), iteratorP->_current->getWidth(), iteratorP->_current->getHeight(), NewPosXPlus, NewPosYPlus, this->getWidth(), this->getHeight())) {
+						if (iteratorP->_current == this)
 						{
 							continue;
 						}
 						hasRencontreEntityInPerimeter = true;
 					}
-
+					iteratorP = iteratorP->_next;
 				}
 
 				if (hasRencontreEntityInPerimeter)
@@ -307,7 +315,7 @@ public:
 	/// </summary>
 	/// <param name="pos"></param>
 	/// <returns></returns>
-	positionMove GetLastPos(positionMove pos)
+	MOVES GetLastPos(MOVES pos)
 	{
 		switch (pos)
 		{
@@ -337,8 +345,8 @@ public:
 		}
 		TimerToMove = Utils::RandomTimePnjAction();
 
-		posArrayToMoveInSecurity[0] = positionMove::NONE;
-		posArrayToMoveInSecurity[1] = positionMove::NONE;
+		posArrayToMoveInSecurity[0] = MOVES::NONE;
+		posArrayToMoveInSecurity[1] = MOVES::NONE;
 
 		// je regarde ce qu'il y a sur la case courante:
 		TypeEntity typeEntiteInCurrentCase = GetEntityInCurrentCase();
@@ -355,7 +363,7 @@ public:
 			return;
 		}
 
-		positionMove pmvTmp = GetEmptyCaseBetweenIa();
+		MOVES pmvTmp = GetEmptyCaseBetweenIa();
 
 		if (pmvTmp != NONE) 
 		{
@@ -379,14 +387,14 @@ public:
 		}
 	}
 
-	bool Action(positionMove pos)
+	bool Action(MOVES pos)
 	{
 		TypeEntity typeEntite = GetTypeEntityAround(pos);
 
 		// s'il a une brique un joueur ou une ia il pose une bombe et s'écarte
 		if (typeEntite == TypeEntity::briquesDestructible || typeEntite == TypeEntity::players || typeEntite == TypeEntity::Ia) {
 			PnjCanMoveInSecurity();
-			if (posArrayToMoveInSecurity[0] == positionMove::NONE || posArrayToMoveInSecurity[1] == positionMove::NONE)
+			if (posArrayToMoveInSecurity[0] == MOVES::NONE || posArrayToMoveInSecurity[1] == MOVES::NONE)
 			{
 				//General::generalTexte = "ACTION none:";
 				//General::generalInt = posArrayToMoveInSecurity[0];
@@ -407,35 +415,44 @@ public:
 		return false;
 	}
 
-	TypeEntity GetTypeEntityAround(positionMove moveTO)
+	TypeEntity GetTypeEntityAround(MOVES moveTO)
 	{
-		if (moveTO == positionMove::LEFT || moveTO == positionMove::RIGHT)
+		if (moveTO == MOVES::LEFT || moveTO == MOVES::RIGHT)
 		{
-			// si la position du joueur + ou - X entre en collision avec une entity 
-			for (Entity* entity : General::EntityArray) {
+			// si la position du joueur + ou - X entre en collision avec une entity
+			const Node<Entity>* iterator = General::entities.get_head();
+			while (iterator) {
 
-				if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), this->getX() + moveTO, this->getY(), this->getWidth(), this->getHeight())) {
-					return entity->getTypeEntity();
+				if (gb.collide.rectRect(iterator->_current->getX(), iterator->_current->getY(), iterator->_current->getWidth(), iterator->_current->getHeight(), this->getX() + moveTO, this->getY(), this->getWidth(), this->getHeight())) {
+					return iterator->_current->getTypeEntity();
 				}
+				iterator = iterator->_next;
 			}
 
-			for (Entity* player : General::PlayersArrays) {
-				if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), this->getX() + moveTO, this->getY(), this->getWidth(), this->getHeight())) {
-					return player->getTypeEntity();
+			Node<Entity>* iteratorP = (Node<Entity>*)General::players.get_head();
+			while (iteratorP) {
+				if (gb.collide.rectRect(iteratorP->_current->getX(), iteratorP->_current->getY(), iteratorP->_current->getWidth(), iteratorP->_current->getHeight(), this->getX() + moveTO, this->getY(), this->getWidth(), this->getHeight())) {
+					return iteratorP->_current->getTypeEntity();
 				}
+				iteratorP = iteratorP->_next;
 			}
 		}
 		else { // regarde en haut ou en bas
-			for (Entity* entity : General::EntityArray) {
-				if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), this->getX(), this->getY() + moveTO, this->getWidth(), this->getHeight())) {
-					return entity->getTypeEntity();
+			const Node<Entity>* iterator = General::entities.get_head();
+
+			while (iterator) {
+				if (gb.collide.rectRect(iterator->_current->getX(), iterator->_current->getY(), iterator->_current->getWidth(), iterator->_current->getHeight(), this->getX(), this->getY() + moveTO, this->getWidth(), this->getHeight())) {
+					return iterator->_current->getTypeEntity();
 				}
+				iterator = iterator->_next;
 			}
 
-			for (Entity* player : General::PlayersArrays) {
-				if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), this->getX(), this->getY() + moveTO, this->getWidth(), this->getHeight())) {
-					return player->getTypeEntity();
+			Node<Entity>* iteratorP = (Node<Entity>*)General::players.get_head();
+			while (iteratorP) {
+				if (gb.collide.rectRect(iteratorP->_current->getX(), iteratorP->_current->getY(), iteratorP->_current->getWidth(), iteratorP->_current->getHeight(), this->getX(), this->getY() + moveTO, this->getWidth(), this->getHeight())) {
+					return iteratorP->_current->getTypeEntity();
 				}
+				iteratorP = iteratorP->_next;
 			}
 		}
 
@@ -444,27 +461,32 @@ public:
 
 	TypeEntity GetEntityInCurrentCase() 
 	{
-		// si la position du joueur + ou - X entre en collision avec une entity 
-		for (Entity* entity : General::EntityArray) {
+		// si la position du joueur + ou - X entre en collision avec une entity
+		const Node<Entity>* iterator = General::entities.get_head();
 
-			if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), this->getX(), this->getY(), this->getWidth(), this->getHeight())) {
-				return entity->getTypeEntity();
+		while (iterator) {
+
+			if (gb.collide.rectRect(iterator->_current->getX(), iterator->_current->getY(), iterator->_current->getWidth(), iterator->_current->getHeight(), this->getX(), this->getY(), this->getWidth(), this->getHeight())) {
+				return iterator->_current->getTypeEntity();
 			}
+			iterator = iterator->_next;
 		}
 
-		for (Entity* player : General::PlayersArrays) {
-			if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), this->getX(), this->getY(), this->getWidth(), this->getHeight())) {
-				return player->getTypeEntity();
+		Node<Entity>* iteratorP = (Node<Entity>*)General::players.get_head();
+		while (iteratorP) {
+			if (gb.collide.rectRect(iteratorP->_current->getX(), iteratorP->_current->getY(), iteratorP->_current->getWidth(), iteratorP->_current->getHeight(), this->getX(), this->getY(), this->getWidth(), this->getHeight())) {
+				return iteratorP->_current->getTypeEntity();
 			}
+			iteratorP = iteratorP->_next;
 		}
 	}
 	
-	positionMove GetEmptyCaseBetweenIa() {
-		positionMove positionArray[4] = { UP,DOWN,LEFT,RIGHT };
-		positionMove EmptyCaseArray[4]{};
+	MOVES GetEmptyCaseBetweenIa() {
+		MOVES positionArray[4] = { UP,DOWN,LEFT,RIGHT };
+		MOVES EmptyCaseArray[4]{};
 
 		int cptEmpty = 0;
-		for (positionMove pos : positionArray)
+		for (MOVES pos : positionArray)
 		{
 			int NewPosX;
 			int NewPosY;
@@ -472,7 +494,7 @@ public:
 				NewPosY = this->getY() + pos;
 				NewPosX = this->getX();
 
-				if (NewPosY< General::HeightCadreScore || NewPosY> General::ScreenHeight)
+				if (NewPosY< General::HEIGHT_CADRE_SCORE || NewPosY> General::ScreenHeight)
 				{
 					continue;
 				}
@@ -480,7 +502,7 @@ public:
 			else {
 				NewPosY = this->getY();
 				NewPosX = this->getX() + pos;
-				if (NewPosX< General::PositionStartDrawX || NewPosX> General::PositionEndDrawX)
+				if (NewPosX< General::POSITION_START_DRAW_X || NewPosX> General::POSITION_END_DRAW_X)
 				{
 					continue;
 				}
@@ -488,19 +510,23 @@ public:
 
 			bool hasRencontreEntityInPerimeter = false;
 
-			// si la position du joueur + ou - X entre en collision avec une entity 
-			for (Entity* entity : General::EntityArray) {
+			// si la position du joueur + ou - X entre en collision avec une entity
+			const Node<Entity>* iterator = General::entities.get_head();
 
-				if (gb.collide.rectRect(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
+			while (iterator) {
+
+				if (gb.collide.rectRect(iterator->_current->getX(), iterator->_current->getY(), iterator->_current->getWidth(), iterator->_current->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
 					// si je rencontre quelque choses
 					hasRencontreEntityInPerimeter = true;
 				}
+				iterator = iterator->_next;
 			}
-
-			for (Entity* player : General::PlayersArrays) {
-				if (gb.collide.rectRect(player->getX(), player->getY(), player->getWidth(), player->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
+			Node<Entity>* iteratorP = (Node<Entity>*)General::players.get_head();
+			while (iteratorP) {
+				if (gb.collide.rectRect(iteratorP->_current->getX(), iteratorP->_current->getY(), iteratorP->_current->getWidth(), iteratorP->_current->getHeight(), NewPosX, NewPosY, this->getWidth(), this->getHeight())) {
 					hasRencontreEntityInPerimeter = true;
 				}
+				iteratorP = iteratorP->_next;
 			}
 
 			// si on a uen collision avec l'ia sur la case rechercher
@@ -521,7 +547,7 @@ public:
 		gb.display.print(cptEmpty);
 		if (cptEmpty == 0) 
 		{
-			return positionMove::NONE;
+			return MOVES::NONE;
 		}
 
 		int random = rand() % cptEmpty;
@@ -534,18 +560,9 @@ public:
 			return;
 		}
 		this->BombePosingNumber++;
-		Bombe* bombe = new Bombe(this->getX(), this->getY(), General::CompteurEntite);
+		Bombe* bombe = new Bombe(this->getX(), this->getY());
 		bombeArray[BombePosingNumber] = bombe;
-
-		General::EntityArray[General::CompteurEntite] = bombe;
-
-		General::CompteurEntite++;
-
-		if (General::CompteurEntite >= General::maxEntite)
-		{
-			General::CompteurEntite = 100; // on efface pas les 100 premièere entite ( les briques etc...)
-		}
-
+		General::entities.push(bombe);
 	}
 };
 

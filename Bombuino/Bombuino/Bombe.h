@@ -8,6 +8,7 @@
 #include "Entity.h"
 #include "General.h"
 #include "Brique.h"
+#include "MOVES.h"
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
@@ -20,38 +21,33 @@ class Bombe : public Entity {
 
 public:
 
-    int TimerBombe = General::BombeTimer;
-    Color colorBombe = gb.createColor(255, TimerBombe, 38);
-    int _indexBombe;
+    int TimerBombe = General::BOMBE_TIMER;
+    Color color = gb.createColor(255, TimerBombe, 38);
     static const int WIDTH = 5;
     static const int HEIGHT = 6;
-    Image Explosion = Image(Utils::EXPLOSION_TEXTURE);
-    Image BombeImg = Image(Utils::BOMB_TEXTURE);
+    Image explo_texture = Image(Utils::EXPLOSION_TEXTURE);
+    Image bombe_texture = Image(Utils::BOMB_TEXTURE);
 
-    Bombe(int x, int y, int indexBombe) {
+    Bombe(int x, int y) {
         _x = x;
         _y = y;
         _width = WIDTH;
         _height = HEIGHT;
-        _indexBombe = indexBombe;
         _typeEntity = TypeEntity::bombes;
     };
 
     void update() {
         if (TimerBombe <= 14) {
-            gb.display.drawImage(_x - Brique::WIDTH - 1, _y - Brique::HEIGHT - 1, Explosion);
+            gb.display.drawImage(_x - Brique::WIDTH - 1, _y - Brique::HEIGHT - 1, explo_texture);
+        } else {
+            gb.display.drawImage(_x, _y, bombe_texture);
         }
-        else {
-            gb.display.drawImage(_x, _y, BombeImg);
-        }
-
-
         if (TimerBombe <= 0) {
-            General::EntityArray[_indexBombe] = nullptr;
             checkBombeAlentour();
+            General::entities.remove(this);
             return;
         }
-        colorBombe = gb.createColor(255, TimerBombe, 38);
+        color = gb.createColor(255, TimerBombe, 38);
         TimerBombe -= 1;
     }
     int GetTimerBombe() {
@@ -60,80 +56,43 @@ public:
 
     void checkBombeAlentour()
     {
+        const Node<Entity>* iteratorEntity = General::entities.get_head();
 
-        for (int i = 0;i < General::maxEntite; i++)
+        while (iteratorEntity)
         {
-            if (General::EntityArray[i] == nullptr)
-            {
+            Entity* ent = iteratorEntity->_current;
+
+            // Je suis une brique ou un Players si oui je check les coord haut bas gauche droite et je delete l'entity
+            if (ent->getTypeEntity() == TypeEntity::briquesDestructible &&
+                (gb.collide.rectRect(_x + MOVES::RIGHT, _y, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()) ||
+                 gb.collide.rectRect(_x + MOVES::LEFT, _y, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()) ||
+                 gb.collide.rectRect(_x, _y + MOVES::UP, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()) ||
+                 gb.collide.rectRect(_x, _y + MOVES::DOWN, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))) {
+                // si c'est une brique
+                iteratorEntity = iteratorEntity->_next;
+                General::entities.remove(ent);
                 continue;
             }
-            Entity* ent = General::EntityArray[i];
-
-            // Je suis une brique ou un Players ?
-            if (ent->getTypeEntity() == TypeEntity::briquesDestructible)
-            {
-
-                // Collision avec le carré  de droite ?
-                if (gb.collide.rectRect(_x + General::RightMove, _y, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))
-                {
-
-                    // si c'est une brique
-                    General::EntityArray[i] = nullptr;
-                }
-                // Collision avec le carré de gauche? 
-                if (gb.collide.rectRect(_x + General::LeftMove, _y, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))
-                {
-                    General::EntityArray[i] = nullptr;
-                }
-                // Collision avec le carré d'en haut?
-                if (gb.collide.rectRect(_x, _y + General::UpMove, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))
-                {
-                    General::EntityArray[i] = nullptr;
-                }
-                // si collision avec le carré du bas 
-                if (gb.collide.rectRect(_x, _y + General::DownMove, Bombe::WIDTH, Bombe::HEIGHT, ent->getX(), ent->getY(), ent->getWidth(), ent->getHeight()))
-                {
-                    General::EntityArray[i] = nullptr;
-                }
-            }
+            iteratorEntity = iteratorEntity->_next;
         }
 
+        const Node<Entity>* iterator = (Node<Entity> *)General::players.get_head();
 
-        for (int i = 0; i < General::NbPlayer;i++) 
-        {
-            if (General::PlayersArrays[i] == nullptr)
-            {
+
+        while (iterator) {
+            Entity* player = iterator->_current;
+
+            if (gb.collide.rectRect(_x, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()) ||
+                gb.collide.rectRect(_x + MOVES::RIGHT, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()) ||
+                gb.collide.rectRect(_x + MOVES::LEFT, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()) ||
+                gb.collide.rectRect(_x, _y + MOVES::UP, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()) ||
+                gb.collide.rectRect(_x, _y + MOVES::DOWN, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight())) {
+                // si c'est une brique
+                iterator = iterator->_next;
+                General::players.remove((Players *)player);
                 continue;
             }
-            Entity* player = General::PlayersArrays[i];
-
-            if (gb.collide.rectRect(_x, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
-            {
-                // si c'est une brique
-                General::PlayersArrays[i] = nullptr;
-            }
-
-            // Collision avec le carré  de droite ?
-            if (gb.collide.rectRect(_x + General::RightMove, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
-            {
-                // si c'est une brique
-                General::PlayersArrays[i] = nullptr;
-            }
-            // Collision avec le carré de gauche? 
-            if (gb.collide.rectRect(_x + General::LeftMove, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
-            {
-                General::PlayersArrays[i] = nullptr;
-            }
-            // Collision avec le carré d'en haut?
-            if (gb.collide.rectRect(_x, _y + General::UpMove, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
-            {
-                General::PlayersArrays[i] = nullptr;
-            }
-            // si collision avec le carré du bas 
-            if (gb.collide.rectRect(_x, _y + General::DownMove, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
-            {
-                General::PlayersArrays[i] = nullptr;
-            }
+            iterator = iterator->_next;
         }
     }
 };

@@ -10,6 +10,7 @@
 #include "Utils.h"
 #include "Brique.h"
 #include "Bombe.h"
+#include "MOVES.h"
 #include <Gamebuino-Meta.h>
 #include <cstdlib>
 
@@ -21,10 +22,10 @@ void setup() {
     gb.begin();
     General::InstanceBreakeableBrique();
     General::InstanceUnbreakBrique();
-    General::PlayersArrays[General::CompteurPlayers++] = new Players(General::MyPlayerStartPositionX, General::MyPlayerStartPositionY, TypeEntity::players, General::CompteurPlayers, PlayersImg);
+    General::players.push(new Players(General::MY_PLAYER_START_POSITION_X, General::MY_PLAYER_START_POSITION_Y, TypeEntity::players, General::CompteurPlayers, PlayersImg));
     
     /*PNJ*/
-    General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 8,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, BLUE);
+    General::players.push(new Players(71, 8,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, BLUE));
     //General::PlayersArrays[General::CompteurPlayers++] = new Players(71, 56,TypeEntity::Ia, General::CompteurPlayers, PlayersImg, RED);
 
 }
@@ -43,16 +44,10 @@ void loop() {
     General::DrawBombe();
     //General::DrawCadre();
     General::DrawEntities();
-
-    for (Entity* ent : General::PlayersArrays)
-    {
-        if (ent == nullptr)
-        {
-            continue;
-        }
-
-        Players* joueur =(Players*) ent;
-        joueur->update();
+    Node<Entity>* iteratorP = (Node<Entity> *)General::players.get_head();
+    while (iteratorP) {
+        iteratorP->_current->update();
+        iteratorP = iteratorP->_next;
     }
 
 }
@@ -62,25 +57,25 @@ void loop() {
 /// Capte les touches de notre joueur
 /// </summary>
 void TouchEvent() {
-    Players* MyPlayer = (Players*) General::PlayersArrays[0];
+    Players* MyPlayer = (Players*) General::players.find(0);
 
     if (gb.buttons.pressed(BUTTON_UP)) {
-        MyPlayer->Move(positionMove::UP);
+        MyPlayer->Move(MOVES::UP);
         //PlayersImg.setFrame(2);
     }
 
     if (gb.buttons.pressed(BUTTON_DOWN)) {
-        MyPlayer->Move(positionMove::DOWN);
+        MyPlayer->Move(MOVES::DOWN);
         //PlayersImg.setFrame(0);
     }
 
     if (gb.buttons.pressed(BUTTON_LEFT)) {
-        MyPlayer->Move(positionMove::LEFT);
+        MyPlayer->Move(MOVES::LEFT);
         //PlayersImg.setFrame(3);
     }
 
     if (gb.buttons.pressed(BUTTON_RIGHT)) {
-        MyPlayer->Move(positionMove::RIGHT);
+        MyPlayer->Move(MOVES::RIGHT);
         //PlayersImg.setFrame(1);
     }
 
