@@ -395,10 +395,10 @@ public:
 			}
 			else {
 				PoseBombe();
-				General::generalTexte = "pOSE BOMBE Y:";
+				/*General::generalTexte = "pOSE BOMBE Y:";
 				General::generalInt = posArrayToMoveInSecurity[0];
 				General::generalInt2 = posArrayToMoveInSecurity[1];
-				General::Pause = true;
+				General::Pause = true;*/
 				Move(posArrayToMoveInSecurity[0]);
 				Move(posArrayToMoveInSecurity[1]);
 				return true;

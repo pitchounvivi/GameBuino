@@ -109,30 +109,93 @@ public:
 
             if (gb.collide.rectRect(_x, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
             {
-                // si c'est une brique
+                // on le met personnage a 0
                 General::PlayersArrays[i] = nullptr;
+
+                // si l'entity est un player
+                if (player->getTypeEntity() == TypeEntity::players)
+                {
+                    General::generalTexte = "GAME OVER";
+                }
+
+                // si l'entity est un pnj
+                if (player->getTypeEntity() == TypeEntity::Ia)
+                {
+                    General::generalTexte = "YOU WIN";
+                }
             }
 
             // Collision avec le carré  de droite ?
             if (gb.collide.rectRect(_x + General::RightMove, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
             {
-                // si c'est une brique
+                // on le met personnage a 0
                 General::PlayersArrays[i] = nullptr;
+
+                // si l'entity est un player
+                if (player->getTypeEntity() == TypeEntity::players)
+                {
+                    General::generalTexte = "GAME OVER";
+                }
+
+                // si l'entity est un pnj
+                if (player->getTypeEntity() == TypeEntity::Ia)
+                {
+                    General::generalTexte = "YOU WIN";
+                }
             }
             // Collision avec le carré de gauche? 
             if (gb.collide.rectRect(_x + General::LeftMove, _y, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
             {
+                // on le met personnage a 0
                 General::PlayersArrays[i] = nullptr;
+
+                // si l'entity est un player
+                if (player->getTypeEntity() == TypeEntity::players)
+                {
+                    General::generalTexte = "GAME OVER";
+                }
+
+                // si l'entity est un pnj
+                if (player->getTypeEntity() == TypeEntity::Ia)
+                {
+                    General::generalTexte = "YOU WIN";
+                }
             }
             // Collision avec le carré d'en haut?
             if (gb.collide.rectRect(_x, _y + General::UpMove, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
             {
+                // on le met personnage a 0
                 General::PlayersArrays[i] = nullptr;
+
+                // si l'entity est un player
+                if (player->getTypeEntity() == TypeEntity::players)
+                {
+                    General::generalTexte = "GAME OVER";
+                }
+
+                // si l'entity est un pnj
+                if (player->getTypeEntity() == TypeEntity::Ia)
+                {
+                    General::generalTexte = "YOU WIN";
+                }
             }
             // si collision avec le carré du bas 
             if (gb.collide.rectRect(_x, _y + General::DownMove, Bombe::WIDTH, Bombe::HEIGHT, player->getX(), player->getY(), player->getWidth(), player->getHeight()))
             {
+                // on le met personnage a 0
                 General::PlayersArrays[i] = nullptr;
+                
+                // si l'entity est un player
+                if (player->getTypeEntity() == TypeEntity::players)
+                {
+                    General::generalTexte = "GAME OVER";
+                }
+
+                // si l'entity est un pnj
+                if (player->getTypeEntity() == TypeEntity::Ia)
+                {
+                    General::generalTexte = "YOU WIN";
+                }
             }
         }
     }
